@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1058877404281",
+    "project_id": "katahari-b10e4",
+    "storage_bucket": "katahari-b10e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058877404281:android:b1dcd9665615b99dea10a8",
+        "android_client_info": {
+          "package_name": "com.example.katahari"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBselKd-6tMuJiqQPe6FTEqbyKdbbwoyzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
