@@ -41,8 +41,6 @@ class _LoginPageState extends State<LoginPage> {
             decoration: InputDecoration(hintText: 'Enter Password'),
           ),
 
-          ElevatedButton(onPressed: (()=>signIn()), child: Text("Login")),
-          SizedBox(height: 30,),
           ElevatedButton(onPressed: (()=>Get.to(SignupPage())), child: Text("Register Now")),
           SizedBox(height: 30,),
           ElevatedButton(onPressed: (()=>Get.to(ForgotPage())), child: Text("Forgot Password?")),
