@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});
@@ -29,7 +30,11 @@ class _ForgotPageState extends State<ForgotPage> {
             children: [
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(hintText: 'Enter Email'),
+                style: GoogleFonts.poppins(),
+                decoration: InputDecoration(
+                  hintText: 'Enter Email',
+                  hintStyle: GoogleFonts.poppins(),
+                ),
               ),
               ElevatedButton(onPressed: (()=>reset()), child: Text("Send Link"),),
             ],

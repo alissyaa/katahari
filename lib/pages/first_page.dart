@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:katahari/pages/login_page.dart';
 import 'package:katahari/pages/signup_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class firstPage extends StatefulWidget {
   const firstPage({super.key});
@@ -35,10 +36,10 @@ class _firstPageState extends State<firstPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Let's start your story",
                     textAlign: TextAlign.left,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: Colors.black,
@@ -48,7 +49,7 @@ class _firstPageState extends State<firstPage> {
                   Text(
                     "How about we write today's story",
                     textAlign: TextAlign.left,
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 17,
                       color: Colors.grey[600],
                     ),
@@ -59,7 +60,7 @@ class _firstPageState extends State<firstPage> {
                     style: OutlinedButton.styleFrom(
                       backgroundColor: const Color(0xFFA9CCEF),
                       minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: Color(0xFF0C1212)),
+                      side: const BorderSide(color: Color(0xFF0C1212)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -67,9 +68,9 @@ class _firstPageState extends State<firstPage> {
                     onPressed: () => Get.to(() => const SignupPage()),
                     child: Text(
                       'Sign Up',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Color(0xFF0C1212),
+                        color: const Color(0xFF0C1212),
                       ),
                     ),
                   ),
@@ -78,7 +79,7 @@ class _firstPageState extends State<firstPage> {
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: Color(0xFF0C1212)),
+                      side: const BorderSide(color: Color(0xFF0C1212)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -86,9 +87,9 @@ class _firstPageState extends State<firstPage> {
                     onPressed: () => Get.to(() => const LoginPage()),
                     child: Text(
                       'Log In',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Color(0xFF0C1212),
+                        color: const Color(0xFF0C1212),
                       ),
                     ),
                   ),
