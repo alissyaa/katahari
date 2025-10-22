@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:katahari/wrapper.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -20,7 +21,7 @@ class _SignupPageState extends State<SignupPage> {
       email: emailController.text,
       password: passwordController.text,
     );
-    Get.offAll(Wrapper());
+    Get.offAll(const Wrapper());
   }
 
   @override
@@ -34,14 +35,25 @@ class _SignupPageState extends State<SignupPage> {
             children: [
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(hintText: 'Enter Email'),
+                style: GoogleFonts.poppins(),
+                decoration: InputDecoration(
+                    hintText: 'Enter Email',
+                    hintStyle: GoogleFonts.poppins()
+                ),
               ),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(hintText: 'Enter Password'),
+                style: GoogleFonts.poppins(),
+                decoration: InputDecoration(
+                    hintText: 'Enter Password',
+                    hintStyle: GoogleFonts.poppins()
+                ),
               ),
-
-              ElevatedButton(onPressed: (()=>signUp()), child: Text("Sign Up"),),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                  onPressed: signUp,
+                  child: Text("Sign Up", style: GoogleFonts.poppins(),)
+              ),
             ],
           ),
         )
