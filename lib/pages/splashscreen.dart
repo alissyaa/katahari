@@ -72,14 +72,26 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward().then((_) async {
       await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const firstPage()),
-        );
+        Navigator.of(context).pushReplacement(_createFadeRoute());
       }
     });
+  }
 
-
+  Route _createFadeRoute() {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 800),
+      pageBuilder: (context, animation, secondaryAnimation) => const firstPage(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final opacity = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOut,
+        );
+        return FadeTransition(
+          opacity: opacity,
+          child: child,
+        );
+      },
+    );
   }
 
   @override

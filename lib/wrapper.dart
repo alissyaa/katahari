@@ -14,14 +14,16 @@ class _WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(),
+      body: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if (snapshot.hasData){
-            return journalpage();
+          if (snapshot.hasData) {
+            return const journalpage();
           } else {
-            return firstPage();
+            return const firstPage();
           }
-        }),
+        },
+      ),
     );
   }
 }
