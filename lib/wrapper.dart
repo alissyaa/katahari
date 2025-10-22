@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:katahari/pages/journal_page.dart';
-import 'package:katahari/pages/login_page.dart';
+import 'package:katahari/pages/first_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Wrapper extends StatefulWidget {
@@ -19,7 +19,7 @@ class _WrapperState extends State<Wrapper> {
           if (snapshot.hasData){
             return journalpage();
           } else {
-            return LoginPage();
+            return firstPage();
           }
         }),
     );
