@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:katahari/pages/login_page.dart';
-import 'package:katahari/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class firstPage extends StatefulWidget {
@@ -55,7 +53,8 @@ class _firstPageState extends State<firstPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  // Sign Up Button
+
+                  // ✅ Sign Up Button
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       backgroundColor: const Color(0xFFA9CCEF),
@@ -65,7 +64,7 @@ class _firstPageState extends State<firstPage> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                    onPressed: () => Get.to(() => const SignupPage()),
+                    onPressed: () => Get.toNamed('/signup'),
                     child: Text(
                       'Sign Up',
                       style: GoogleFonts.poppins(
@@ -74,8 +73,9 @@ class _firstPageState extends State<firstPage> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 12),
-                  // Log In Button
+
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
@@ -84,7 +84,7 @@ class _firstPageState extends State<firstPage> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                    onPressed: () => Get.to(() => const LoginPage()),
+                    onPressed: () => Get.toNamed('/login'),
                     child: Text(
                       'Log In',
                       style: GoogleFonts.poppins(

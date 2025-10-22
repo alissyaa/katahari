@@ -3,6 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:katahari/pages/splashscreen.dart';
 import 'package:katahari/wrapper.dart';
+import 'package:katahari/pages/login_page.dart';
+import 'package:katahari/pages/signup_page.dart';
+import 'package:katahari/pages/journal_page.dart';
+import 'package:katahari/pages/first_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,12 +17,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      title: 'Katahari',
+
+      initialRoute: '/splash',
+
+      getPages: [
+        GetPage(name: '/splash', page: () => const SplashScreen()),
+        GetPage(name: '/wrapper', page: () => const Wrapper()),
+        GetPage(name: '/first', page: () => const firstPage()),
+        GetPage(name: '/signup', page: () => const SignupPage()),
+        GetPage(name: '/login', page: () => const LoginPage()),
+        GetPage(name: '/journal', page: () => const journalpage()),
+      ],
     );
   }
 }
