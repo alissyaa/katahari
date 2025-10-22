@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
-import 'package:katahari/pages/first_page.dart';
+import 'package:katahari/pages/splashscreen.dart';
 import 'package:katahari/wrapper.dart';
 
 void main() async {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: firstPage(),
+      home: SplashScreen(),
     );
   }
 }
