@@ -5,6 +5,7 @@ import 'package:katahari/pages/forgot_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/wrapper.dart';
+import 'package:video_player/video_player.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,24 +14,56 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage>
+    with TickerProviderStateMixin {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  late VideoPlayerController _eyesController;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Video controller
+    _eyesController = VideoPlayerController.asset('assets/mata_tiga.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+        _eyesController.play();
+      });
+    _eyesController.setLooping(false);
+
+    // Fade animation
+    _fadeController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _fadeAnimation =
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _eyesController.dispose();
+    _fadeController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   void signIn() async {
-    // Validasi untuk email dan password
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       Get.snackbar(
-        "Input Tidak Lengkap",
-        "Harap isi email dan password.",
+        "Please fill all fields",
+        "Please enter your email and password",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange.shade700,
+        backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
       return;
     }
 
-    // Logika sign-in dengan email dan password
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
@@ -40,130 +73,129 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text.trim(),
       );
       Get.offAll(const Wrapper());
-      // Navigasi ke halaman utama setelah berhasil login
-
       Get.snackbar(
-          "Sukses", "Login berhasil!", snackPosition: SnackPosition.BOTTOM);
+        "Success",
+        "Login successful!",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } on FirebaseAuthException catch (e) {
-      Get.back(); // Tutup dialog loading
-      String errorMessage = "Terjadi kesalahan. Silakan coba lagi.";
-      if (e.code == 'user-not-found' || e.code == 'wrong-password' ||
+      Get.back();
+      String errorMessage = "An error occurred. Please try again.";
+      if (e.code == 'user-not-found' ||
+          e.code == 'wrong-password' ||
           e.code == 'invalid-credential') {
-        errorMessage = "Email atau password yang Anda masukkan salah.";
+        errorMessage = "The email or password you entered is incorrect.";
       }
-      Get.snackbar("Login Gagal", errorMessage,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade600,
-          colorText: Colors.white);
+      Get.snackbar(
+        "Login unsuccessful!",
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff0f0f0),
+      backgroundColor: const Color(0xFFF2F1F2),
       body: SafeArea(
-        child: Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height - MediaQuery
-              .of(context)
-              .padding
-              .top,
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Column(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Video
+                _eyesController.value.isInitialized
+                    ? FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 250,
+                    child: VideoPlayer(_eyesController),
+                  ),
+                )
+                    : SizedBox(
+                  width: double.infinity,
+                  height: 250,
+                  child: Container(color: Colors.grey[300]),
+                ),
+                const SizedBox(height: 20),
+
+                // Title
+                Text(
+                  "Hey, There,\nYou're Back!",
+                  style: GoogleFonts.poppins(
+                      fontSize: 30, fontWeight: FontWeight.bold, height: 1.2),
+                ),
+                const SizedBox(height: 35),
+
+                _buildTextField("Email", emailController),
+                const SizedBox(height: 15),
+                _buildTextField("Password", passwordController, obscure: true),
+                const SizedBox(height: 10),
+
+                Align(
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    onPressed: () => Get.to(() => const ForgotPage()),
+                    child: Text(
+                      "Forgot Password?",
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Signup link
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Hey, There,\nYou're Back!",
-                        textAlign: TextAlign.left,
+                    Text("Don't have an account?",
                         style: GoogleFonts.poppins(
-                            fontSize: 28, // Ukuran font ini tetap
-                            fontWeight: FontWeight.bold,
-                            height: 1.2),
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-
-                    TextField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: _buildInputDecoration(hint: "Email"),
-                    ),
-                    const SizedBox(height: 15),
-
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: _buildInputDecoration(hint: "Password"),
-                    ),
-                    const SizedBox(height: 10),
-
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16)),
                     TextButton(
-                      onPressed: () => Get.to(() => const ForgotPage()),
+                      onPressed: () => Get.to(() => const SignupPage()),
                       child: Text(
-                        "Forgot Password?",
+                        "Sign Up",
                         style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                            fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Don't have an account?",
-                            style: GoogleFonts.poppins(fontSize: 16)),
-                        // <-- DIUBAH MENJADI 16
-                        TextButton(
-                          onPressed: () => Get.to(() => const SignupPage()),
-                          style: TextButton.styleFrom(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 5)),
-                          child: Text(
-                            "Sign Up",
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-
-                    // ===== LOGIN BUTTON =====
-                    ElevatedButton(
-                      onPressed: signIn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffb0c4de),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: const BorderSide(color: Colors.black, width: 2),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        "Log In",
-                        style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
                             color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                            fontSize: 16),
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 25),
+
+                // Login button (match text field style)
+                ElevatedButton(
+                  onPressed: signIn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffb0c4de),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50), // match text fields
+                      side: const BorderSide(color: Colors.black, width: 2),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Log In",
+                    style: GoogleFonts.poppins(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -171,20 +203,37 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration _buildInputDecoration({required String hint}) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 16),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.black, width: 2),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: const BorderSide(color: Colors.blueAccent, width: 2.5),
+  Widget _buildTextField(String hint, TextEditingController controller,
+      {bool obscure = false}) {
+    return Focus(
+      child: Builder(
+        builder: (context) {
+          final hasFocus = Focus.of(context).hasFocus;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: hasFocus ? Colors.blue : Colors.black,
+                width: hasFocus ? 2.5 : 2,
+              ),
+            ),
+            child: TextField(
+              controller: controller,
+              obscureText: obscure,
+              style: GoogleFonts.poppins(),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                border: InputBorder.none,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

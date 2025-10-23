@@ -20,7 +20,7 @@ class _WrapperState extends State<Wrapper> {
           if (snapshot.hasData) {
             return const journalpage();
           } else {
-            return const firstPage();
+            return const FirstPage();
           }
         },
       ),

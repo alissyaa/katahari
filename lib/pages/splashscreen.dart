@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
   Route _createFadeRoute() {
     return PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 800),
-      pageBuilder: (context, animation, secondaryAnimation) => const firstPage(),
+      pageBuilder: (context, animation, secondaryAnimation) => const FirstPage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final opacity = CurvedAnimation(
           parent: animation,
