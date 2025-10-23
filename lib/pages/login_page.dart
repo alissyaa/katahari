@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:katahari/pages/forgot_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:katahari/wrapper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,11 +34,12 @@ class _LoginPageState extends State<LoginPage> {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
           barrierDismissible: false);
+
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Get.back();
+      Get.offAll(const Wrapper());
       // Navigasi ke halaman utama setelah berhasil login
 
       Get.snackbar(
