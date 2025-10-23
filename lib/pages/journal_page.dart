@@ -16,6 +16,7 @@ class _journalpageState extends State<journalpage> {
     await FirebaseAuth.instance.signOut();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
