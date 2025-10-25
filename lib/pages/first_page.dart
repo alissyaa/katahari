@@ -105,6 +105,7 @@ class _FirstPageState extends State<FirstPage>
                     ),
                   ),
 
+                  const SizedBox(height: 13),
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
