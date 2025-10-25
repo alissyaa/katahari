@@ -102,101 +102,109 @@ class _LoginPageState extends State<LoginPage>
       backgroundColor: const Color(0xFFF2F1F2),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Video
-                _eyesController.value.isInitialized
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 50, bottom: 40),
+                child: _eyesController.value.isInitialized
                     ? FadeTransition(
                   opacity: _fadeAnimation,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 250,
+                  child: AspectRatio(
+                    aspectRatio: _eyesController.value.aspectRatio,
                     child: VideoPlayer(_eyesController),
                   ),
                 )
-                    : SizedBox(
-                  width: double.infinity,
-                  height: 250,
-                  child: Container(color: Colors.grey[300]),
-                ),
-                const SizedBox(height: 20),
-
-                // Title
-                Text(
-                  "Hey, There,\nYou're Back!",
-                  style: GoogleFonts.poppins(
-                      fontSize: 30, fontWeight: FontWeight.bold, height: 1.2),
-                ),
-                const SizedBox(height: 35),
-
-                _buildTextField("Email", emailController),
-                const SizedBox(height: 15),
-                _buildTextField("Password", passwordController, obscure: true),
-                const SizedBox(height: 10),
-
-                Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: () => Get.to(() => const ForgotPage()),
-                    child: Text(
-                      "Forgot Password?",
-                      style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // Signup link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                    : const SizedBox(height: 240), // Placeholder to prevent layout jump
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Don't have an account?",
-                        style: GoogleFonts.poppins(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16)),
-                    TextButton(
-                      onPressed: () => Get.to(() => const SignupPage()),
+                    // Title
+                    Text(
+                      "Hey, There,\nYou're Back!",
+                      style: GoogleFonts.poppins(
+                          fontSize: 30, fontWeight: FontWeight.bold, height: 1.2),
+                    ),
+                    const SizedBox(height: 35),
+
+                    _buildTextField("Email", emailController),
+                    const SizedBox(height: 15),
+                    _buildTextField("Password", passwordController, obscure: true),
+                    const SizedBox(height: 20),
+
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        onPressed: () => Get.to(() => const ForgotPage()),
+                        child: Text(
+                          "Forgot Password?",
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    // Signup link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account?",
+                            style: GoogleFonts.poppins(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16)),
+                        TextButton(
+                          onPressed: () => Get.to(() => const SignupPage()),
+                          child: Text(
+                            "Sign Up",
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                                fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Login button (match text field style)
+                    const SizedBox(height: 32),OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: const Color(0xFFA9CCEF),
+                        minimumSize: const Size(double.infinity, 50),
+                        side: const BorderSide(color: Color(0xFF0C1212)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ).copyWith(
+                        overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                              (Set<WidgetState> states) {
+                            if (states.contains(WidgetState.pressed)) {
+                              return const Color(0xFF84B2DF); // darker blue when pressed
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      onPressed: signIn,
                       child: Text(
-                        "Sign Up",
+                        "Log In",
                         style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                            fontSize: 16),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF0C1212),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 25),
-
-                // Login button (match text field style)
-                ElevatedButton(
-                  onPressed: signIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffb0c4de),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50), // match text fields
-                      side: const BorderSide(color: Colors.black, width: 2),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    "Log In",
-                    style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

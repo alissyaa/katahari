@@ -135,90 +135,87 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 8),
-
-                _eyesController.value.isInitialized
-                    ? FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SizedBox(
-                    width: 400,
-                    height: 250,
-                    child: VideoPlayer(_eyesController),
-                  ),
-                )
-                    : SizedBox(
-                  width: 100,
-                  height: 50,
-                  child: Container(color: Colors.grey[300]),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 30),
+                  child: _eyesController.value.isInitialized
+                      ? FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: AspectRatio(
+                            aspectRatio: _eyesController.value.aspectRatio,
+                            child: VideoPlayer(_eyesController),
+                          ),
+                        )
+                      : const SizedBox(height: 240), // Placeholder to prevent layout jump
                 ),
-                const SizedBox(height: 20),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Ready to Write \nYours?",
-                    style: GoogleFonts.poppins(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF0C1212),
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                _buildTextField("Your nickname", nicknameController),
-                const SizedBox(height: 16),
-                _buildTextField("Email", emailController),
-                const SizedBox(height: 16),
-                _buildTextField("Password", passwordController, obscure: true),
-                const SizedBox(height: 12),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Already have an account? ",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Get.to(() => const LoginPage()),
-                      child: Text(
-                        "Log In",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF0C1212),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Ready to Write \nYours?",
+                          style: GoogleFonts.poppins(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF0C1212),
+                          ),
+                          textAlign: TextAlign.left,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.black, width: 2),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                  ),
-                  onPressed: signUp,
-                  child: Text(
-                    "Sign Up",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0C1212),
-                    ),
+                      const SizedBox(height: 28),
+                      _buildTextField("Your nickname", nicknameController),
+                      const SizedBox(height: 16),
+                      _buildTextField("Email", emailController),
+                      const SizedBox(height: 16),
+                      _buildTextField("Password", passwordController, obscure: true),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account? ",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Get.to(() => const LoginPage()),
+                            child: Text(
+                              "Log In",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF0C1212),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.black, width: 2),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50)),
+                        ),
+                        onPressed: signUp,
+                        child: Text(
+                          "Sign Up",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF0C1212),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
