@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/wrapper.dart';
 import 'login_page.dart';
+import 'package:video_player/video_player.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -13,10 +14,43 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  late VideoPlayerController _eyesController;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Video controller for eyes
+    _eyesController = VideoPlayerController.asset('assets/mata_dua.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+        _eyesController.play();
+      });
+    _eyesController.setLooping(false);
+
+    // Fade animation
+    _fadeController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    nicknameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    _eyesController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
 
   Future<void> signUp() async {
     String nickname = nicknameController.text.trim();
@@ -35,18 +69,19 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     try {
-      // 1. Buat akun dengan email & password
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
+      // SHOW LOADING
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
       );
 
-      // 2. Update displayName di Firebase Auth
+      // Create user
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
       await userCredential.user!.updateDisplayName(nickname);
       await userCredential.user!.reload();
 
-      // 3. Simpan data user di Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
@@ -56,10 +91,13 @@ class _SignupPageState extends State<SignupPage> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // 4. Navigasi ke Wrapper
-      Get.offAll(const Wrapper());
+      // CLOSE LOADING
+      Get.back();
 
+      // Navigate
+      Get.offAll(const Wrapper());
     } on FirebaseAuthException catch (e) {
+      Get.back(); // close loading
       String message;
       if (e.code == 'email-already-in-use') {
         message = "Email already in use";
@@ -79,6 +117,7 @@ class _SignupPageState extends State<SignupPage> {
         colorText: Colors.white,
       );
     } catch (e) {
+      Get.back(); // close loading
       Get.snackbar(
         "Error",
         "Something went wrong",
@@ -92,7 +131,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFE7AD),
+      backgroundColor: const Color(0xFFFBE6AF),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -100,15 +139,35 @@ class _SignupPageState extends State<SignupPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 8),
 
-                Text(
-                  "Ready to write yours?",
-                  style: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0C1212),
+                _eyesController.value.isInitialized
+                    ? FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SizedBox(
+                    width: 400,
+                    height: 250,
+                    child: VideoPlayer(_eyesController),
                   ),
-                  textAlign: TextAlign.center,
+                )
+                    : SizedBox(
+                  width: 100,
+                  height: 50,
+                  child: Container(color: Colors.grey[300]),
+                ),
+                const SizedBox(height: 20),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Ready to Write \nYours?",
+                    style: GoogleFonts.poppins(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF0C1212),
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -125,8 +184,8 @@ class _SignupPageState extends State<SignupPage> {
                     Text(
                       "Already have an account? ",
                       style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[700],
+                        fontSize: 16,
+                        color: Colors.grey[600],
                       ),
                     ),
                     GestureDetector(
@@ -134,7 +193,7 @@ class _SignupPageState extends State<SignupPage> {
                       child: Text(
                         "Log In",
                         style: GoogleFonts.poppins(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF0C1212),
                         ),
@@ -148,24 +207,16 @@ class _SignupPageState extends State<SignupPage> {
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
                     backgroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.black, width: 1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                  ).copyWith(
-                    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                          (states) {
-                        if (states.contains(MaterialState.pressed)) {
-                          return Colors.blue.withOpacity(0.3); // pressed biru
-                        }
-                        return null; // state lain pakai default
-                      },
-                    ),
+                    side: const BorderSide(color: Colors.black, width: 2),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
                   ),
                   onPressed: signUp,
                   child: Text(
                     "Sign Up",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       color: const Color(0xFF0C1212),
                     ),
                   ),
@@ -180,25 +231,35 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget _buildTextField(String hint, TextEditingController controller,
       {bool obscure = false}) {
-    return TextField(
-      controller: controller,
-      obscureText: obscure,
-      style: GoogleFonts.poppins(),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: const BorderSide(color: Colors.black, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
-        ),
+    return Focus(
+      child: Builder(
+        builder: (context) {
+          final hasFocus = Focus.of(context).hasFocus;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: hasFocus ? Colors.blue : Colors.black,
+                width: hasFocus ? 2.5 : 2,
+              ),
+            ),
+            child: TextField(
+              controller: controller,
+              obscureText: obscure,
+              style: GoogleFonts.poppins(),
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                border: InputBorder.none,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
