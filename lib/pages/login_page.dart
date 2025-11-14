@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:katahari/pages/forgot_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,45 +54,37 @@ class _LoginPageState extends State<LoginPage>
 
   void signIn() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar(
-        "Please fill all fields",
-        "Please enter your email and password",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Please fill all fields"),
+      ));
       return;
     }
 
     try {
-      Get.dialog(const Center(child: CircularProgressIndicator()),
-          barrierDismissible: false);
+      showDialog(
+          context: context,
+          builder: (context) => const Center(child: CircularProgressIndicator()));
 
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Get.offAll(const Wrapper());
-      Get.snackbar(
-        "Success",
-        "Login successful!",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      context.go('/');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Login successful!"),
+      ));
     } on FirebaseAuthException catch (e) {
-      Get.back();
+      Navigator.pop(context);
       String errorMessage = "An error occurred. Please try again.";
       if (e.code == 'user-not-found' ||
           e.code == 'wrong-password' ||
           e.code == 'invalid-credential') {
         errorMessage = "The email or password you entered is incorrect.";
       }
-      Get.snackbar(
-        "Login unsuccessful!",
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorMessage),
         backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      ));
     }
   }
 
@@ -138,7 +130,7 @@ class _LoginPageState extends State<LoginPage>
                     Align(
                       alignment: Alignment.center,
                       child: TextButton(
-                        onPressed: () => Get.to(() => const ForgotPage()),
+                        onPressed: () => context.go('/forgot'),
                         child: Text(
                           "Forgot Password?",
                           style: GoogleFonts.poppins(
@@ -160,7 +152,7 @@ class _LoginPageState extends State<LoginPage>
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16)),
                         TextButton(
-                          onPressed: () => Get.to(() => const SignupPage()),
+                          onPressed: () => context.go('/signup'),
                           child: Text(
                             "Sign Up",
                             style: GoogleFonts.poppins(

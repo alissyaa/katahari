@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FirstPage extends StatefulWidget {
@@ -95,7 +95,7 @@ class _FirstPageState extends State<FirstPage>
                         },
                       ),
                     ),
-                    onPressed: () => Get.toNamed('/signup'),
+                    onPressed: () => context.go('/signup'),
                     child: Text(
                       'Sign Up',
                       style: GoogleFonts.poppins(
@@ -124,7 +124,7 @@ class _FirstPageState extends State<FirstPage>
                         },
                       ),
                     ),
-                    onPressed: () => Get.toNamed('/login'),
+                    onPressed: () => context.go('/login'),
                     child: Text(
                       'Log In',
                       style: GoogleFonts.poppins(
