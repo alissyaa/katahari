@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/wrapper.dart';
 import 'login_page.dart';
@@ -184,7 +185,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => Get.to(() => const LoginPage()),
+                            onTap: () => context.go('/login'),
                             child: Text(
                               "Log In",
                               style: GoogleFonts.poppins(

@@ -36,14 +36,15 @@ class JournalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: entry['image'] == null ? const Color(0xFFF0F0F0) : Colors.transparent,
+        color: entry['image'] == null
+            ? const Color(0xFFF0F0F0)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.black, width: 2),
         image: entry['image'] != null
             ? DecorationImage(
                 image: NetworkImage(entry['image']),
-                fit: BoxFit.cover,
-              )
+                fit: BoxFit.cover)
             : null,
       ),
       child: ClipRRect(
@@ -54,10 +55,9 @@ class JournalCard extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
+                      colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter),
                 ),
               ),
             Padding(
@@ -71,11 +71,7 @@ class JournalCard extends StatelessWidget {
                   if (entry['image'] == null)
                     Align(
                       alignment: Alignment.topRight,
-                      child: Icon(
-                        getMoodIcon(entry['mood']),
-                        color: getMoodColor(entry['mood']),
-                        size: 30,
-                      ),
+                      child: Icon(getMoodIcon(entry['mood']), color: getMoodColor(entry['mood']), size: 30),
                     ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,12 +79,11 @@ class JournalCard extends StatelessWidget {
                       Text(
                         entry['title'],
                         style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: entry['image'] != null
-                              ? Colors.white
-                              : Colors.black,
-                        ),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: entry['image'] != null
+                                ? Colors.white
+                                : Colors.black),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -96,11 +91,10 @@ class JournalCard extends StatelessWidget {
                       Text(
                         entry['date'],
                         style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: entry['image'] != null
-                              ? Colors.white70
-                              : Colors.grey[600],
-                        ),
+                            fontSize: 12,
+                            color: entry['image'] != null
+                                ? Colors.white70
+                                : Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -112,17 +106,12 @@ class JournalCard extends StatelessWidget {
                 top: 10,
                 right: 10,
                 child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    getMoodIcon(entry['mood']),
-                    color: getMoodColor(entry['mood']),
-                    size: 24,
-                  ),
-                ),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        shape: BoxShape.circle),
+                    child: Icon(getMoodIcon(entry['mood']),
+                        color: getMoodColor(entry['mood']), size: 24)),
               ),
           ],
         ),

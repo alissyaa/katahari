@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'first_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -72,26 +72,9 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward().then((_) async {
       await Future.delayed(const Duration(milliseconds: 800));
       if (mounted) {
-        Navigator.of(context).pushReplacement(_createFadeRoute());
+        context.go('/first');
       }
     });
-  }
-
-  Route _createFadeRoute() {
-    return PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 800),
-      pageBuilder: (context, animation, secondaryAnimation) => const FirstPage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final opacity = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOut,
-        );
-        return FadeTransition(
-          opacity: opacity,
-          child: child,
-        );
-      },
-    );
   }
 
   @override
@@ -132,13 +115,13 @@ class _SplashScreenState extends State<SplashScreen>
                     height: _expandAnim.value,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withValues(
-                        alpha: 0.85 * _bgTransitionAnim.value,
+                      color: Colors.white.withAlpha(
+                        (0.85 * 255 * _bgTransitionAnim.value).toInt(),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withValues(
-                            alpha: 0.7 * _bgTransitionAnim.value,
+                          color: Colors.white.withAlpha(
+                            (0.7 * 255 * _bgTransitionAnim.value).toInt(),
                           ),
                           blurRadius: 120,
                           spreadRadius: 80,
