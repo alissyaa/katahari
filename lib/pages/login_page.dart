@@ -1,10 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
-import 'package:katahari/pages/forgot_page.dart';
-import 'package:katahari/pages/signup_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:katahari/wrapper.dart';
+import 'package:katahari/config/routes.dart';
 import 'package:video_player/video_player.dart';
 
 class LoginPage extends StatefulWidget {
@@ -61,32 +61,32 @@ class _LoginPageState extends State<LoginPage>
     }
 
     try {
-      showDialog(
-          context: context,
-          builder: (context) => const Center(child: CircularProgressIndicator()));
-
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      context.go('/');
+
+      context.go(AppRoutes.journal);
+
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Login successful!"),
       ));
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
       String errorMessage = "An error occurred. Please try again.";
+
       if (e.code == 'user-not-found' ||
           e.code == 'wrong-password' ||
           e.code == 'invalid-credential') {
         errorMessage = "The email or password you entered is incorrect.";
       }
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(errorMessage),
         backgroundColor: Colors.redAccent,
       ));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

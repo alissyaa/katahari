@@ -6,14 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
 
-class journalpage extends StatefulWidget {
-  const journalpage({super.key});
+class JournalPage extends StatefulWidget {
+  const JournalPage({super.key});
 
   @override
-  State<journalpage> createState() => _journalpageState();
+  State<JournalPage> createState() => _JournalPageState();
 }
 
-class _journalpageState extends State<journalpage> {
+class _JournalPageState extends State<JournalPage> {
   final user = FirebaseAuth.instance.currentUser!;
 
   Color _getMoodColor(String mood) {

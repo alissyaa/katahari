@@ -60,7 +60,7 @@ GoRouter createRouter() {
         path: AppRoutes.journal,
         name: 'journal',
         builder: (BuildContext context, GoRouterState state) {
-          return const journalpage();
+          return const JournalPage();
         },
       ),
     ],
