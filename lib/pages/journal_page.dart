@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
+import 'package:katahari/pages/profile_page.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -83,6 +84,7 @@ class _JournalPageState extends State<JournalPage> {
             const SizedBox(height: 20),
           ],
         ),
+
       ),
     );
   }
@@ -91,13 +93,57 @@ class _JournalPageState extends State<JournalPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Journal',
-          style: GoogleFonts.poppins(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          children: [
+            Text(
+              'Journal',
+              style: GoogleFonts.poppins(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 20),
+
+            // To Do List Link
+            // GestureDetector(
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => const ToDoListPage()),
+            //     );
+            //   },
+            //   child: Text(
+            //     'To Do List',
+            //     style: GoogleFonts.poppins(
+            //       fontSize: 16,
+            //       color: Colors.blue,
+            //       decoration: TextDecoration.underline,
+            //     ),
+            //   ),
+            // ),
+            //
+            // const SizedBox(width: 15),
+
+            // Profile Link
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+              child: Text(
+                'Profile',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
         ),
+
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 7),
           decoration: BoxDecoration(
@@ -154,6 +200,7 @@ class _JournalPageState extends State<JournalPage> {
       ],
     );
   }
+
 
   Widget _buildSearchBar() {
     return TextField(
