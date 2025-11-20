@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/wrapper.dart';
+import '../config/routes.dart';
 import 'login_page.dart';
 import 'package:video_player/video_player.dart';
 
@@ -70,12 +71,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     }
 
     try {
-      // SHOW LOADING
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
-
       // Create user
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -92,13 +87,13 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // CLOSE LOADING
-      Get.back();
+      context.go(AppRoutes.journal);
 
       // Navigate
-      Get.offAll(const Wrapper());
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Login successful!"),
+      ));
     } on FirebaseAuthException catch (e) {
-      Get.back(); // close loading
       String message;
       if (e.code == 'email-already-in-use') {
         message = "Email already in use";
@@ -110,22 +105,10 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         message = e.message ?? "Sign up failed";
       }
 
-      Get.snackbar(
-        "Error",
-        message,
-        snackPosition: SnackPosition.BOTTOM,
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
         backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
-    } catch (e) {
-      Get.back(); // close loading
-      Get.snackbar(
-        "Error",
-        "Something went wrong",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      ));
     }
   }
 
