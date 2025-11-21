@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
 import 'package:katahari/pages/profile_page.dart';
+import 'package:katahari/pages/todo/todo_page.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -16,6 +18,10 @@ class JournalPage extends StatefulWidget {
 
 class _JournalPageState extends State<JournalPage> {
   final user = FirebaseAuth.instance.currentUser!;
+
+  String get loggedInUser {
+    return user.displayName ?? user.email?.split('@')[0] ?? 'User';
+  }
 
   Color _getMoodColor(String mood) {
     switch (mood) {
@@ -104,25 +110,27 @@ class _JournalPageState extends State<JournalPage> {
             ),
             const SizedBox(width: 20),
 
-            // To Do List Link
-            // GestureDetector(
-            //   onTap: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => const ToDoListPage()),
-            //     );
-            //   },
-            //   child: Text(
-            //     'To Do List',
-            //     style: GoogleFonts.poppins(
-            //       fontSize: 16,
-            //       color: Colors.blue,
-            //       decoration: TextDecoration.underline,
-            //     ),
-            //   ),
-            // ),
-            //
-            // const SizedBox(width: 15),
+            GestureDetector(
+              onTap: () {
+                context.pushNamed(
+                  'todo',
+                  pathParameters: {
+                    'userName': loggedInUser,   // ← sekarang bener
+                    'taskStatus': 'Ongoing',
+                  },
+                );
+              },
+              child: Text(
+                'To Do List',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 15),
 
             // Profile Link
             GestureDetector(
