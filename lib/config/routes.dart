@@ -7,6 +7,9 @@ import 'package:katahari/pages/login_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:katahari/pages/splashscreen.dart';
 import 'package:katahari/pages/todo/todo_page.dart';
+import '../components/bottom_navigation_shell.dart';
+import '../pages/profile_page.dart';
+import '../pages/todo/create_todo_page.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -65,15 +68,30 @@ GoRouter createRouter() {
           return BottomNavigationShell(navigationShell: navigationShell);
         },
         branches: [
-          // StatefulShellBranch(
-          //   routes: [
-          //     GoRoute(
-          //       path: AppRoutes.todo,
-          //       name: 'todo',
-          //       builder: (context, state) => const TodoPage(),
-          //     ),
-          //   ],
-          // ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.todo,
+                name: 'todo',
+                builder: (context, state) => TodoPage(
+                  userName: 'DefaultUser',  // bisa diganti sesuai kebutuhan
+                  taskStatus: 'Ongoing',
+                ),
+              ),
+              GoRoute(
+                path: '${AppRoutes.todo}/:userName/:taskStatus',
+                name: 'todoDetail',
+                builder: (context, state) {
+                  final userName = state.pathParameters['userName']!;
+                  final taskStatus = state.pathParameters['taskStatus']!;
+                  return TodoPage(
+                    userName: userName,
+                    taskStatus: taskStatus,
+                  );
+                },
+              ),
+            ],
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -93,18 +111,6 @@ GoRouter createRouter() {
             ],
           ),
         ],
-      ),
-      GoRoute(
-        path: '${AppRoutes.todo}/:userName/:taskStatus',
-        name: 'todo',
-        builder: (context, state) {
-          final userName = state.pathParameters['userName']!;
-          final taskStatus = state.pathParameters['taskStatus']!;
-          return TodoPage(
-            userName: userName,
-            taskStatus: taskStatus,
-          );
-        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

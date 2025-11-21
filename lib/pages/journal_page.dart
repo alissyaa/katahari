@@ -108,47 +108,6 @@ class _JournalPageState extends State<JournalPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 20),
-
-            GestureDetector(
-              onTap: () {
-                context.pushNamed(
-                  'todo',
-                  pathParameters: {
-                    'userName': loggedInUser,   // ← sekarang bener
-                    'taskStatus': 'Ongoing',
-                  },
-                );
-              },
-              child: Text(
-                'To Do List',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 15),
-
-            // Profile Link
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                );
-              },
-              child: Text(
-                'Profile',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
           ],
         ),
 
