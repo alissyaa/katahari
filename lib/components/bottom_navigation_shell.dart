@@ -71,8 +71,8 @@ class BottomNavigationShell extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildNavItem(context, 0, Icons.checklist_rounded, currentIndex),
-                    _buildNavItem(context, 1, Icons.bookmark_rounded, currentIndex),
+                    _buildNavItem(context, 0, Icons.list_alt_rounded, currentIndex),
+                    _buildNavItem(context, 1, Icons.book_rounded, currentIndex),
                     _buildNavItem(context, 2, Icons.person_rounded, currentIndex),
                   ],
                 ),
