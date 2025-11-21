@@ -1,4 +1,3 @@
-// lib/pages/todo/todo_page.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,23 +6,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/pages/todo/create_todo_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TodoPage extends StatefulWidget {
-  final String userName;
-  final String taskStatus;
-
-  const TodoPage({
-    super.key,
-    required this.userName,
-    required this.taskStatus,
-  });
+  const TodoPage({super.key});
 
   @override
   State<TodoPage> createState() => _TodoPageState();
 }
 
 class _TodoPageState extends State<TodoPage> {
+  final user = FirebaseAuth.instance.currentUser!;
+
+  late String displayName;
   late String _selectedStatus;
+
+  final List<Map<String, String>> _todos = [];
 
   final String _assetCompleted = 'assets/empty_completed.png';
   final String _assetMissed = 'assets/empty_missed.png';
@@ -32,14 +30,14 @@ class _TodoPageState extends State<TodoPage> {
   final String _fallbackLocalImage =
       '/mnt/data/c0d2fb34-9e50-48c6-ac53-b374f02af002.png';
 
-  final List<Map<String, String>> _todos = [];
-
   @override
   void initState() {
     super.initState();
-    _selectedStatus = widget.taskStatus;
+    displayName = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+    _selectedStatus = 'Ongoing';
   }
 
+  // Colors for each status
   Color _statusColor(String status) {
     switch (status) {
       case 'Completed':
@@ -120,8 +118,9 @@ class _TodoPageState extends State<TodoPage> {
           children: [
             const SizedBox(height: 20),
 
+            // Greeting
             Text(
-              'Hello, ${widget.userName}',
+              'Hello, ${displayName[0].toUpperCase()}${displayName.substring(1)}',
               style: GoogleFonts.poppins(
                 fontSize: 34,
                 fontWeight: FontWeight.bold,
@@ -141,6 +140,7 @@ class _TodoPageState extends State<TodoPage> {
             const HowWasYourDayCard(),
             const SizedBox(height: 24),
 
+            // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -153,6 +153,7 @@ class _TodoPageState extends State<TodoPage> {
                   ),
                 ),
 
+                // STATUS DROPDOWN
                 Container(
                   padding:
                   const EdgeInsets.symmetric(horizontal: 30, vertical: 7),
@@ -196,9 +197,9 @@ class _TodoPageState extends State<TodoPage> {
                           _selectedStatus = newValue;
                         });
                       },
-                      selectedItemBuilder: (BuildContext context) {
-                        return <String>['Completed', 'Missed', 'Ongoing']
-                            .map((String value) {
+                      selectedItemBuilder: (context) {
+                        return ['Completed', 'Missed', 'Ongoing']
+                            .map((value) {
                           return Center(
                             child: Text(
                               value,
@@ -218,6 +219,7 @@ class _TodoPageState extends State<TodoPage> {
 
             const SizedBox(height: 24),
 
+            // --- EMPTY VIEW ---
             if (_filteredTodos.isEmpty) ...[
               const SizedBox(height: 40),
               Center(
@@ -266,7 +268,10 @@ class _TodoPageState extends State<TodoPage> {
                   ],
                 ),
               ),
-            ] else ...[
+            ]
+
+            // --- LIST VIEW ---
+            else ...[
               const SizedBox(height: 12),
               ListView.separated(
                 shrinkWrap: true,
