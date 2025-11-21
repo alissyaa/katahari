@@ -6,6 +6,7 @@ import 'package:katahari/pages/journal_page.dart';
 import 'package:katahari/pages/login_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:katahari/pages/splashscreen.dart';
+import 'package:katahari/pages/todo/todo_page.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -15,6 +16,7 @@ class AppRoutes {
   static const String forgot = '/forgot';
   static const String journal = '/journal';
   static const String notes = '/notes';
+  static const String todo = '/todo';
 }
 
 GoRouter createRouter() {
@@ -61,6 +63,18 @@ GoRouter createRouter() {
         name: 'journal',
         builder: (BuildContext context, GoRouterState state) {
           return const JournalPage();
+        },
+      ),
+      GoRoute(
+        path: '${AppRoutes.todo}/:userName/:taskStatus',
+        name: 'todo',
+        builder: (context, state) {
+          final userName = state.pathParameters['userName']!;
+          final taskStatus = state.pathParameters['taskStatus']!;
+          return TodoPage(
+            userName: userName,
+            taskStatus: taskStatus,
+          );
         },
       ),
     ],
