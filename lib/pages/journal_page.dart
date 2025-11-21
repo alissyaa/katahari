@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
-import 'package:katahari/pages/profile_page.dart';
-import 'package:katahari/pages/todo/todo_page.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});

@@ -9,7 +9,6 @@ import 'package:katahari/pages/splashscreen.dart';
 import 'package:katahari/pages/todo/todo_page.dart';
 import '../components/bottom_navigation_shell.dart';
 import '../pages/profile_page.dart';
-import '../pages/todo/create_todo_page.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -73,22 +72,7 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.todo,
                 name: 'todo',
-                builder: (context, state) => TodoPage(
-                  userName: 'DefaultUser',  // bisa diganti sesuai kebutuhan
-                  taskStatus: 'Ongoing',
-                ),
-              ),
-              GoRoute(
-                path: '${AppRoutes.todo}/:userName/:taskStatus',
-                name: 'todoDetail',
-                builder: (context, state) {
-                  final userName = state.pathParameters['userName']!;
-                  final taskStatus = state.pathParameters['taskStatus']!;
-                  return TodoPage(
-                    userName: userName,
-                    taskStatus: taskStatus,
-                  );
-                },
+                builder: (context, state) => const TodoPage(),
               ),
             ],
           ),
