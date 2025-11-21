@@ -17,6 +17,7 @@ class AppRoutes {
   static const String journal = '/journal';
   static const String notes = '/notes';
   static const String todo = '/todo';
+  static const String profile = '/profile';
 }
 
 GoRouter createRouter() {
@@ -58,12 +59,40 @@ GoRouter createRouter() {
           return const ForgotPage();
         },
       ),
-      GoRoute(
-        path: AppRoutes.journal,
-        name: 'journal',
-        builder: (BuildContext context, GoRouterState state) {
-          return const JournalPage();
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return BottomNavigationShell(navigationShell: navigationShell);
         },
+        branches: [
+          // StatefulShellBranch(
+          //   routes: [
+          //     GoRoute(
+          //       path: AppRoutes.todo,
+          //       name: 'todo',
+          //       builder: (context, state) => const TodoPage(),
+          //     ),
+          //   ],
+          // ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.journal,
+                name: 'journal',
+                builder: (context, state) => const JournalPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                name: 'profile',
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: '${AppRoutes.todo}/:userName/:taskStatus',

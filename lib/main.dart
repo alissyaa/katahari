@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:katahari/config/routes.dart';
 import 'firebase_options.dart';
 
+// Router dibuat SEKALI
+final _appRouter = createRouter();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: createRouter(),
+      routerConfig: _appRouter,
       title: 'Katahari',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
