@@ -321,7 +321,7 @@ class _TodoPageState extends State<TodoPage> {
 
                         IconButton(
                           onPressed: () {
-                            setState(() {
+                            setState(() { //cobacoba
                               _todos.remove(todo);
                             });
                           },
