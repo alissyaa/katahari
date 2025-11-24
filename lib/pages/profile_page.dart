@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
 import 'package:katahari/pages/edit_profile_page.dart';
+import 'package:katahari/pages/settings/settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -45,6 +46,13 @@ class _ProfilePageState extends State<ProfilePage> {
         _headerColor = result['headerColor'];
       });
     }
+  }
+
+  void _navigateToSettingsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
   }
 
   @override
@@ -116,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
         InkWell(
-          onTap: _navigateToEditPage,
+          onTap: _navigateToSettingsPage,
           borderRadius: BorderRadius.circular(20),
           child: Icon(Icons.settings_outlined,
               size: 30, color: AppColors.secondary),
