@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
+import 'package:katahari/pages/edit_profile_page.dart';
+import 'package:katahari/pages/settings/settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,8 +13,47 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String _name = "-";
+  String _birthday = "-";
+  String _mbti = "-";
+  Color _cardColor = AppColors.screen2;
+  Color _headerColor = AppColors.primary;
+
   String userName = "User";
   String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+
+  void _navigateToEditPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            EditProfilePage(
+              currentName: _name,
+              currentBirthday: _birthday,
+              currentMbti: _mbti,
+              currentCardColor: _cardColor,
+              currentHeaderColor: _headerColor,
+            ),
+      ),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _name = result['name'];
+        _birthday = result['birthday'];
+        _mbti = result['mbti'];
+        _cardColor = result['cardColor'];
+        _headerColor = result['headerColor'];
+      });
+    }
+  }
+
+  void _navigateToSettingsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,32 +69,29 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 24),
               _buildHeader(),
               const SizedBox(height: 24),
-              _buildProfileCard(),
+              GestureDetector(
+                onTap: _navigateToEditPage,
+                child: _buildProfileCard(),
+              ),
               const SizedBox(height: 28),
               _buildMoodTrackerTitle(),
               const SizedBox(height: 20),
-
               _buildMoodRow(
-                iconData: Icons.sentiment_very_satisfied,
-                backgroundColor: AppColors.screen1,
-                count: 0,
-              ),
+                  iconData: Icons.sentiment_very_satisfied,
+                  backgroundColor: AppColors.screen1,
+                  count: 0),
               _buildMoodRow(
-                iconData: Icons.sentiment_neutral,
-                backgroundColor: AppColors.screen2,
-                count: 0,
-              ),
+                  iconData: Icons.sentiment_neutral,
+                  backgroundColor: AppColors.screen2,
+                  count: 0),
               _buildMoodRow(
-                iconData: Icons.sentiment_very_dissatisfied,
-                backgroundColor: AppColors.merah,
-                count: 0,
-              ),
+                  iconData: Icons.sentiment_very_dissatisfied,
+                  backgroundColor: AppColors.merah,
+                  count: 0),
               _buildMoodRow(
-                iconData: Icons.sentiment_dissatisfied,
-                backgroundColor: AppColors.button,
-                count: 0,
-              ),
-
+                  iconData: Icons.sentiment_dissatisfied,
+                  backgroundColor: AppColors.button,
+                  count: 0),
               const SizedBox(height: 40),
             ],
           ),
@@ -61,8 +99,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
-  // --- UI Builders ---
 
   Widget _buildAppBarContent() {
     return const SizedBox(height: 16);
@@ -76,31 +112,22 @@ class _ProfilePageState extends State<ProfilePage> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hello, $userName',
-              style: GoogleFonts.poppins(
-                fontSize: 32,
-                color: AppColors.secondary,
-              ),
-            ),
+            Text('Hello, $userName',
+                style: GoogleFonts.poppins(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.secondary)),
             const SizedBox(height: 4),
-            Text(
-              formattedDate,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: AppColors.abumuda,
-              ),
-            ),
+            Text(formattedDate,
+                style: GoogleFonts.poppins(
+                    fontSize: 14, color: AppColors.abumuda)),
           ],
         ),
         InkWell(
-          onTap: () {},
+          onTap: _navigateToSettingsPage,
           borderRadius: BorderRadius.circular(20),
-          child: Icon(
-            Icons.settings_outlined,
-            size: 30,
-            color: AppColors.secondary,
-          ),
+          child: Icon(Icons.settings_outlined,
+              size: 30, color: AppColors.secondary),
         ),
       ],
     );
@@ -109,62 +136,47 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileCard() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.screen2,
+        color: _cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.secondary, width: 1.5),
       ),
       child: Column(
         children: [
-          // Top white bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: _headerColor,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(14),
-                topRight: Radius.circular(14),
-              ),
+                  topLeft: Radius.circular(14),
+                  topRight: Radius.circular(14)),
               border: Border(
-                bottom: BorderSide(color: AppColors.secondary, width: 1.5),
-              ),
+                  bottom: BorderSide(color: AppColors.secondary, width: 1.5)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.auto_awesome,
-                        size: 20, color: AppColors.secondary),
-                    const SizedBox(width: 8),
-                    Text(
-                      'katahari.',
+                Row(children: [
+                  Icon(Icons.auto_awesome,
+                      size: 20, color: AppColors.secondary),
+                  const SizedBox(width: 8),
+                  Text('katahari.',
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppColors.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Emoji circles
-                Row(
-                  children: [
-                    _buildEmojiCircle(Icons.sentiment_very_satisfied,
-                        AppColors.screen1),
-                    const SizedBox(width: 6),
-                    _buildEmojiCircle(
-                        Icons.sentiment_neutral, AppColors.screen2),
-                    const SizedBox(width: 6),
-                    _buildEmojiCircle(
-                        Icons.sentiment_very_dissatisfied, AppColors.merah),
-                  ],
-                ),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppColors.secondary)),
+                ]),
+                Row(children: [
+                  _buildEmojiCircle(
+                      Icons.sentiment_very_satisfied, AppColors.screen1),
+                  const SizedBox(width: 6),
+                  _buildEmojiCircle(Icons.sentiment_neutral, AppColors.screen2),
+                  const SizedBox(width: 6),
+                  _buildEmojiCircle(
+                      Icons.sentiment_very_dissatisfied, AppColors.merah),
+                ]),
               ],
             ),
           ),
-
-          // Content below header
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -175,26 +187,25 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppColors.secondary, width: 1.5),
+                    border:
+                    Border.all(color: AppColors.secondary, width: 1.5),
                   ),
                   child: Icon(Icons.add_a_photo,
                       size: 32, color: AppColors.secondary),
                 ),
                 const SizedBox(width: 16),
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Name\n-",
+                    Text("Name\n$_name",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                     const SizedBox(height: 4),
-                    Text("Birthday\n-",
+                    Text("Birthday\n$_birthday",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                     const SizedBox(height: 4),
-                    Text("MBTI\n-",
+                    Text("MBTI\n$_mbti",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                   ],
@@ -238,16 +249,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMoodRow({
-    required IconData iconData,
+  Widget _buildMoodRow({required IconData iconData,
     required Color backgroundColor,
-    required int count,
-  }) {
+    required int count}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
         children: [
-          // Emoji circle
           Container(
             width: 32,
             height: 32,
@@ -259,8 +267,6 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Icon(iconData, size: 20, color: AppColors.secondary),
           ),
           const SizedBox(width: 12),
-
-          // Count bubble
           Expanded(
             child: Container(
               height: 50,
@@ -282,8 +288,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           const SizedBox(width: 12),
-
-          // Arrow button
           Container(
             width: 32,
             height: 32,
@@ -292,8 +296,8 @@ class _ProfilePageState extends State<ProfilePage> {
               color: backgroundColor,
               border: Border.all(color: AppColors.secondary, width: 1.5),
             ),
-            child:
-            Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.secondary),
+            child: Icon(Icons.arrow_forward_ios,
+                size: 14, color: AppColors.secondary),
           ),
         ],
       ),
