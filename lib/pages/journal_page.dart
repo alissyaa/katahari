@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
-
+import 'package:katahari/constant/app_colors.dart';
 import '../components/journal/dropdown.dart';
 
 class JournalPage extends StatefulWidget {
@@ -39,19 +39,19 @@ class _JournalPageState extends State<JournalPage> {
     String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.primary,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 70),
         child: Container(
           width: 70,
           height: 70,
           decoration: BoxDecoration(
-            color: Colors.lightBlue[200],
+            color: AppColors.button,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.black, width: 3),
+            border: Border.all(color: AppColors.secondary, width: 3),
           ),
           child: IconButton(
-            icon: const Icon(Icons.add, size: 40, color: Colors.black),
+            icon: const Icon(Icons.add, size: 40, color: AppColors.secondary),
             onPressed: () {
               context.push('/add_journal');
             },
@@ -76,7 +76,8 @@ class _JournalPageState extends State<JournalPage> {
               formattedDate,
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: AppColors.abumuda,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 30),
@@ -135,18 +136,18 @@ class _JournalPageState extends State<JournalPage> {
         hintStyle: GoogleFonts.poppins(),
         prefixIcon: const Icon(Icons.search, size: 28),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.primary,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Colors.black, width: 2.5),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2.5),
         ),
       ),
     );

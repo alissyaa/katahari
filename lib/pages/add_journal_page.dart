@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
+import 'package:katahari/constant/app_colors.dart';
 
 class Sticker {
   final String assetPath;
