@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
+import 'package:katahari/constant/app_colors.dart';
 import 'add_journal_page.dart' show Sticker;
 
 class JournalDetailPage extends StatelessWidget {
@@ -39,23 +39,23 @@ class JournalDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.primary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.secondary),
           onPressed: () => context.pop(),
         ),
         centerTitle: true,
         title: Text(
           'Journal',
           style: GoogleFonts.poppins(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
+              color: AppColors.secondary, fontWeight: FontWeight.bold, fontSize: 22),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_horiz, color: Colors.black, size: 28),
+            icon: const Icon(Icons.more_horiz, color: AppColors.secondary, size: 28),
             onPressed: () {},
           ),
         ],
@@ -64,11 +64,11 @@ class JournalDetailPage extends StatelessWidget {
         onPressed: () {
           context.push('/edit_journal/$journalId');
         },
-        backgroundColor: const Color(0xFFB0C4DE),
+        backgroundColor: AppColors.button,
         shape: const CircleBorder(
-          side: BorderSide(color: Colors.black, width: 2),
+          side: BorderSide(color: AppColors.secondary, width: 2),
         ),
-        child: const Icon(Icons.edit, color: Colors.black),
+        child: const Icon(Icons.edit, color: AppColors.secondary),
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: _getJournalStream(),
@@ -100,11 +100,11 @@ class JournalDetailPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(24.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: AppColors.secondary.withOpacity(0.1),
                           blurRadius: 50,
                           offset: const Offset(0, 5),
                         )
@@ -131,7 +131,7 @@ class JournalDetailPage extends StatelessWidget {
                                   loadingBuilder: (context, child, progress) =>
                                   progress == null ? child : const Center(child: CircularProgressIndicator()),
                                   errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                  const Icon(Icons.broken_image, size: 50, color: AppColors.abumuda),
                                 ),
                               ),
                             ),
@@ -141,7 +141,7 @@ class JournalDetailPage extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   _formatTimestamp(timestamp),
-                                  style: GoogleFonts.poppins(color: Colors.grey[600]),
+                                  style: GoogleFonts.poppins(color: AppColors.abumuda),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -158,7 +158,7 @@ class JournalDetailPage extends StatelessWidget {
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
                               fontSize: 28,
-                              color: Colors.black,
+                              color: AppColors.secondary,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -206,18 +206,18 @@ class JournalDetailPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey.shade400)
+          border: Border.all(color: AppColors.primary,)
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.grey[700]),
+          Icon(icon, size: 18, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             label,
             style: GoogleFonts.poppins(
-              color: Colors.grey[800],
+              color: AppColors.abu,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),

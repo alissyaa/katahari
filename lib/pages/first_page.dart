@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class FirstPage extends StatefulWidget {
   const FirstPage({super.key});
@@ -44,7 +45,7 @@ class _FirstPageState extends State<FirstPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFD5EEC7),
+        backgroundColor: AppColors.screen1,
       body: SafeArea(
         child: Column(
           children: [
@@ -53,9 +54,9 @@ class _FirstPageState extends State<FirstPage>
               margin: const EdgeInsets.symmetric(horizontal: 30),
               padding: const EdgeInsets.all(50),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: Colors.black, width: 2),
+                border: Border.all(color: AppColors.secondary, width: 2),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +67,7 @@ class _FirstPageState extends State<FirstPage>
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
-                      color: Colors.black,
+                      color: AppColors.secondary,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -74,14 +75,14 @@ class _FirstPageState extends State<FirstPage>
                     "How about we write today's story",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: AppColors.abumuda,
                     ),
                   ),
                   const SizedBox(height: 32),OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA9CCEF),
+                      backgroundColor: AppColors.button,
                       minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(color: Color(0xFF0C1212)),
+                      side: const BorderSide(color: AppColors.secondary),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -110,7 +111,7 @@ class _FirstPageState extends State<FirstPage>
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       side: const BorderSide(color: Color(0xFF0C1212)),
-                      backgroundColor: Colors.white,
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -118,7 +119,7 @@ class _FirstPageState extends State<FirstPage>
                       overlayColor: WidgetStateProperty.resolveWith<Color?>(
                             (Set<WidgetState> states) {
                           if (states.contains(WidgetState.pressed)) {
-                            return const Color(0xFFA9CCEF); // turns blue when pressed
+                            return AppColors.button; // turns blue when pressed
                           }
                           return null;
                         },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 import '../config/routes.dart';
 
@@ -62,7 +63,7 @@ class BottomNavigationShell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: AppColors.secondary.withOpacity(0.08),
                       blurRadius: 10,
                       offset: Offset(0, 4),
                     ),
@@ -99,11 +100,11 @@ class BottomNavigationShell extends StatelessWidget {
         padding: EdgeInsets.all(isActive ? 12 : 6),
         decoration: isActive
             ? BoxDecoration(
-          color: Colors.white,
+          color: AppColors.primary,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: AppColors.secondary.withOpacity(0.2),
               blurRadius: 8,
               offset: Offset(0, 3),
             )
@@ -113,7 +114,7 @@ class BottomNavigationShell extends StatelessWidget {
         child: Icon(
           icon,
           size: 28,
-          color: Colors.black,
+          color: AppColors.secondary,
         ),
       ),
     );

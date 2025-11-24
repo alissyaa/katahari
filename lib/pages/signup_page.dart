@@ -4,10 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:katahari/wrapper.dart';
-import '../config/routes.dart';
-import 'login_page.dart';
 import 'package:video_player/video_player.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -29,7 +27,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Video controller for eyes
     _eyesController = VideoPlayerController.asset('assets/mata_dua.mp4')
       ..initialize().then((_) {
         setState(() {});
@@ -37,7 +34,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
       });
     _eyesController.setLooping(false);
 
-    // Fade animation
     _fadeController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
@@ -64,14 +60,13 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         "Error",
         "Please fill all fields",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
+        backgroundColor: AppColors.merah,
+        colorText: AppColors.primary,
       );
       return;
     }
 
     try {
-      // Create user
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
@@ -87,9 +82,8 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      context.go(AppRoutes.journal);
+      context.go('/journal');
 
-      // Navigate
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Login successful!"),
       ));
@@ -107,7 +101,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(message),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppColors.merah,
       ));
     }
   }
@@ -115,7 +109,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBE6AF),
+      backgroundColor: AppColors.screen2,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -126,14 +120,16 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                   padding: const EdgeInsets.only(top: 10, bottom: 30),
                   child: _eyesController.value.isInitialized
                       ? FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: AspectRatio(
-                            aspectRatio: _eyesController.value.aspectRatio,
-                            child: VideoPlayer(_eyesController),
-                          ),
-                        )
-                      : const SizedBox(height: 240), // Placeholder to prevent layout jump
+                    opacity: _fadeAnimation,
+                    child: AspectRatio(
+                      aspectRatio: _eyesController.value.aspectRatio,
+                      child: VideoPlayer(_eyesController),
+                    ),
+                  )
+                      : const SizedBox(height: 240),
                 ),
+
+                /// TITLE
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
@@ -145,17 +141,19 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                           style: GoogleFonts.poppins(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0C1212),
+                            color: AppColors.secondary,
                           ),
-                          textAlign: TextAlign.left,
                         ),
                       ),
+
                       const SizedBox(height: 28),
+
                       _buildTextField("Your nickname", nicknameController),
                       const SizedBox(height: 16),
                       _buildTextField("Email", emailController),
                       const SizedBox(height: 16),
                       _buildTextField("Password", passwordController, obscure: true),
+
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,7 +162,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                             "Already have an account? ",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: AppColors.abumuda,
                             ),
                           ),
                           GestureDetector(
@@ -174,18 +172,23 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF0C1212),
+                                color: AppColors.secondary,
                               ),
                             ),
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 20),
+
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.black, width: 2),
+                          backgroundColor: AppColors.primary,
+                          side: BorderSide(
+                            color: AppColors.secondary,
+                            width: 2,
+                          ),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50)),
                         ),
@@ -195,7 +198,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF0C1212),
+                            color: AppColors.secondary,
                           ),
                         ),
                       ),
@@ -210,6 +213,7 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     );
   }
 
+  /// TEXTFIELD BUILDER
   Widget _buildTextField(String hint, TextEditingController controller,
       {bool obscure = false}) {
     return Focus(
@@ -220,20 +224,23 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(
-                color: hasFocus ? Colors.blue : Colors.black,
+                color: hasFocus
+                    ? AppColors.button
+                    : AppColors.secondary,
                 width: hasFocus ? 2.5 : 2,
               ),
             ),
             child: TextField(
               controller: controller,
               obscureText: obscure,
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.poppins(color: AppColors.secondary),
               decoration: InputDecoration(
                 hintText: hint,
-                hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                hintStyle:
+                GoogleFonts.poppins(color: AppColors.abumuda),
                 contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: InputBorder.none,

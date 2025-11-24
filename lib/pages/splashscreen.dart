@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,8 +21,8 @@ class _SplashScreenState extends State<SplashScreen>
   bool _showBlueLogo = false;
   bool _showText = false;
 
-  final Color _startColor = const Color(0xFFA9CCEF);
-  final Color _endColor = Colors.white;
+  final Color _startColor = AppColors.button;
+  final Color _endColor = AppColors.primary;
 
   @override
   void initState() {
@@ -87,8 +88,8 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     final Shader gradientShader = const LinearGradient(
       colors: [
-        Color(0xFFA9CCEF),
-        Color(0xFF0C1212),
+        AppColors.button,
+        AppColors.secondary,
       ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
@@ -115,13 +116,17 @@ class _SplashScreenState extends State<SplashScreen>
                     height: _expandAnim.value,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withAlpha(
-                        (0.85 * 255 * _bgTransitionAnim.value).toInt(),
+                      color: AppColors.primary.withAlpha(
+                        (0.85 * 255 * _bgTransitionAnim.value)
+                            .clamp(0, 255)
+                            .toInt(),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withAlpha(
-                            (0.7 * 255 * _bgTransitionAnim.value).toInt(),
+                          color: AppColors.primary.withAlpha(
+                            (0.7 * 255 * _bgTransitionAnim.value)
+                                .clamp(0, 255)
+                                .toInt(),
                           ),
                           blurRadius: 120,
                           spreadRadius: 80,

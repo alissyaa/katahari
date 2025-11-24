@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/components/journal/journal_card.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class JournalGrid extends StatelessWidget {
   final String searchQuery;
@@ -62,7 +63,7 @@ class JournalGrid extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 18,
-                  color: Colors.grey[600],
+                  color: AppColors.abumuda.withOpacity(0.6),
                 ),
               ),
             ),
