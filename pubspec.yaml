@@ -46,6 +46,8 @@ dependencies:
   video_player: ^2.10.0
   intl: ^0.20.2
   dropdown_button2: ^2.3.9
+  image_picker: ^1.1.2
+  firebase_storage: ^13.0.4
 
 dev_dependencies:
   flutter_test:
@@ -70,17 +72,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo_white.png
-    - assets/logo_blue.png
-    - assets/forgotpass.png
-    - assets/mata_first.mp4
-    - assets/mata_dua.mp4
-    - assets/mata_tiga.mp4
-    - assets/header_journal.png
-    - assets/empty_ongoing.png
-    - assets/empty_missed.png
-    - assets/empty_completed.png
-
+    - assets/ #
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
