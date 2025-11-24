@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:katahari/pages/add_journal_page.dart';
 import 'package:katahari/pages/first_page.dart';
 import 'package:katahari/pages/forgot_page.dart';
+import 'package:katahari/pages/journal_detail_page.dart';
 import 'package:katahari/pages/journal_page.dart';
 import 'package:katahari/pages/login_page.dart';
 import 'package:katahari/pages/signup_page.dart';
@@ -10,58 +12,67 @@ import 'package:katahari/pages/todo/todo_page.dart';
 import '../components/bottom_navigation_shell.dart';
 import '../pages/profile_page.dart';
 
+// Definisikan path sebagai konstanta agar mudah dikelola
 class AppRoutes {
   static const String splash = '/';
   static const String login = '/login';
   static const String signup = '/signup';
   static const String first = '/first';
   static const String forgot = '/forgot';
+  static const String addJournal = '/add_journal';
   static const String journal = '/journal';
-  static const String notes = '/notes';
   static const String todo = '/todo';
   static const String profile = '/profile';
+  // Jadikan rute detail dan edit sebagai rute top-level yang unik
+  static const String journalDetail = '/journal_detail';
+  static const String editJournal = '/edit_journal';
 }
 
 GoRouter createRouter() {
   return GoRouter(
     initialLocation: AppRoutes.splash,
     routes: <RouteBase>[
+      // Rute-rute ini tidak memiliki Navbar
       GoRoute(
         path: AppRoutes.splash,
-        name: 'splash',
-        builder: (BuildContext context, GoRouterState state) {
-          return const SplashScreen();
-        },
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
         path: AppRoutes.login,
-        name: 'login',
-        builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
-        },
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
         path: AppRoutes.signup,
-        name: 'signup',
-        builder: (BuildContext context, GoRouterState state) {
-          return const SignupPage();
-        },
+        builder: (context, state) => const SignupPage(),
       ),
       GoRoute(
         path: AppRoutes.first,
-        name: 'first',
-        builder: (BuildContext context, GoRouterState state) {
-          return const FirstPage();
-        },
+        builder: (context, state) => const FirstPage(),
       ),
       GoRoute(
         path: AppRoutes.forgot,
-        name: 'forgot',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ForgotPage();
+        builder: (context, state) => const ForgotPage(),
+      ),
+      GoRoute(
+        path: '${AppRoutes.journalDetail}/:journalId',
+        builder: (context, state) {
+          final journalId = state.pathParameters['journalId']!;
+          return JournalDetailPage(journalId: journalId);
         },
       ),
+      GoRoute(
+        path: '${AppRoutes.editJournal}/:journalId',
+        builder: (context, state) {
+          final journalId = state.pathParameters['journalId']!;
+          return AddJournalPage(journalId: journalId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.addJournal,
+        builder: (context, state) => const AddJournalPage(),
+      ),
 
+      // Rute-rute ini akan memiliki Navbar
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return BottomNavigationShell(navigationShell: navigationShell);
@@ -71,7 +82,6 @@ GoRouter createRouter() {
             routes: [
               GoRoute(
                 path: AppRoutes.todo,
-                name: 'todo',
                 builder: (context, state) => const TodoPage(),
               ),
             ],
@@ -80,7 +90,6 @@ GoRouter createRouter() {
             routes: [
               GoRoute(
                 path: AppRoutes.journal,
-                name: 'journal',
                 builder: (context, state) => const JournalPage(),
               ),
             ],
@@ -89,7 +98,6 @@ GoRouter createRouter() {
             routes: [
               GoRoute(
                 path: AppRoutes.profile,
-                name: 'profile',
                 builder: (context, state) => const ProfilePage(),
               ),
             ],

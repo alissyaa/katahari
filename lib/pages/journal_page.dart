@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
+
+import '../components/journal/dropdown.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -15,26 +17,20 @@ class JournalPage extends StatefulWidget {
 
 class _JournalPageState extends State<JournalPage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final _searchController = TextEditingController();
+  
+  // --- State untuk filter ---
+  String _searchQuery = '';
+  String? _selectedMoodFilter;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   String get loggedInUser {
     return user.displayName ?? user.email?.split('@')[0] ?? 'User';
-  }
-
-  Color _getMoodColor(String mood) {
-    switch (mood) {
-      case 'Happy':
-        return const Color(0xFFD7F0C5); // Light Green
-      case 'Flat':
-        return const Color(0xFFFFF3A7); // Light Yellow
-      case 'Angry':
-        return const Color(0xFFFFC6C6); // Light Red
-      case 'Sad':
-        return const Color(0xFFB9D7F7); // Light Blue
-      case 'Filter':
-        return Colors.grey[300]!;
-      default:
-        return Colors.white;
-    }
   }
 
   @override
@@ -44,16 +40,30 @@ class _JournalPageState extends State<JournalPage> {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      floatingActionButton: FloatingActionButton.large(
-        onPressed: () {},
-        child: FaIcon(FontAwesomeIcons.plus),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 70),
+        child: Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            color: Colors.lightBlue[200],
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.black, width: 3),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.add, size: 40, color: Colors.black),
+            onPressed: () {
+              context.push('/add_journal');
+            },
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           children: [
             const SizedBox(height: 20),
-            // Header
             Text(
               'Hello, ${displayName[0].toUpperCase()}${displayName.substring(1)}',
               style: GoogleFonts.poppins(
@@ -70,24 +80,20 @@ class _JournalPageState extends State<JournalPage> {
               ),
             ),
             const SizedBox(height: 30),
-
-            // "How Did Your Day Go?" Card
             const HowWasYourDayCard(),
             const SizedBox(height: 30),
-
-            // Journal Section Header
             _buildJournalHeader(),
             const SizedBox(height: 20),
-
-            // Search Bar
             _buildSearchBar(),
             const SizedBox(height: 20),
-
-            const JournalGrid(),
+            // --- Mengirim state filter ke JournalGrid ---
+            JournalGrid(
+              searchQuery: _searchQuery,
+              moodFilter: _selectedMoodFilter,
+            ),
             const SizedBox(height: 20),
           ],
         ),
-
       ),
     );
   }
@@ -96,78 +102,34 @@ class _JournalPageState extends State<JournalPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Text(
-              'Journal',
-              style: GoogleFonts.poppins(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        Text(
+          'Journal',
+          style: GoogleFonts.poppins(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 7),
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: Colors.black, width: 2),
-          ),
-          child: DropdownButton<String>(
-            value: 'Filter',
-            underline: const SizedBox(),
-            icon: const Icon(Icons.keyboard_arrow_down),
-            isDense: true,
-            borderRadius: BorderRadius.circular(20),
-            items: <String>['Filter', 'Happy', 'Flat', 'Angry', 'Sad']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _getMoodColor(value),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: Colors.black, width: 2),
-                  ),
-                  child: Center(
-                    child: Text(
-                      value,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {},
-            selectedItemBuilder: (BuildContext context) {
-              return <String>['Filter', 'Happy', 'Flat', 'Angry', 'Sad']
-                  .map<Widget>((String item) {
-                return Center(
-                  child: Text(
-                    'Filter', // Always show 'Filter' text for the selected item button
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }).toList();
-            },
-          ),
+        MoodDropdown(
+          onSelected: (value) {
+            setState(() {
+              // --- PERBAIKAN DI SINI ---
+              // Jika memilih 'Filter' atau 'All', hapus filternya (set ke null)
+              _selectedMoodFilter = (value == 'Filter' || value == 'All') ? null : value.toLowerCase();
+            });
+          },
         ),
       ],
     );
   }
 
-
   Widget _buildSearchBar() {
     return TextField(
+      controller: _searchController,
+      onSubmitted: (value) {
+        setState(() {
+          _searchQuery = value;
+        });
+      },
       decoration: InputDecoration(
         hintText: 'Search...',
         hintStyle: GoogleFonts.poppins(),

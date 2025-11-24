@@ -1,66 +1,106 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/components/journal/journal_card.dart';
 
 class JournalGrid extends StatelessWidget {
-  const JournalGrid({super.key});
+  final String searchQuery;
+  final String? moodFilter;
+
+  const JournalGrid({
+    super.key,
+    required this.searchQuery,
+    this.moodFilter,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // This data should ideally be fetched from a state management solution or passed down.
-    final List<Map<String, dynamic>> journalEntries = [
-      {
-        'title': 'Aku dapat ghost w...',
-        'date': 'Tue, 12 September 2025',
-        'mood': 'happy',
-        'image': 'https://i.pinimg.com/564x/8f/52/64/8f52642d9526a7b3737b019488e5a2a2.jpg'
-      },
-      {
-        'title': 'Trip gone wrong',
-        'date': 'Tue, 12 September 2025',
-        'mood': 'angry',
-        'image': 'https://i.pinimg.com/564x/4e/4a/0c/4e4a0c5c6b3b2a5d214af6b1e6255c26.jpg'
-      },
-      {
-        'title': 'Kebanyakan kelas ganti',
-        'date': 'Tue, 11 September 2025',
-        'mood': 'neutral',
-        'image': null
-      },
-      {
-        'title': 'Aku dapat ghost s...',
-        'date': 'Tue, 12 September 2025',
-        'mood': 'happy',
-        'image': 'https://i.pinimg.com/564x/8f/52/64/8f52642d9526a7b3737b019488e5a2a2.jpg'
-      },
-      {
-        'title': 'Meet up bestiee!!!',
-        'date': 'Tue, 10 September 2025',
-        'mood': 'happy',
-        'image': 'https://i.pinimg.com/564x/ac/5c/45/ac5c453549926868a12515b671758655.jpg'
-      },
-    ];
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const Center(child: Text("Please log in to see your journal."));
+    }
 
-    // The total number of items in the grid is the number of journal entries plus the 'add' card.
-    const int addCardPosition = 3;
-    final int totalItems = journalEntries.length + 1;
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('journals')
+        .orderBy('createdAt', descending: true);
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: totalItems,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 15,
-        mainAxisSpacing: 15,
-        childAspectRatio: 0.75,
-      ),
-      itemBuilder: (context, index) {
+    if (moodFilter != null) {
+      query = query.where('mood', isEqualTo: moodFilter);
+    }
 
-        // Adjust the index to fetch from the journalEntries list.
-        final entryIndex = index > addCardPosition ? index - 1 : index;
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        final entry = journalEntries[entryIndex];
-        return JournalCard(entry: entry);
+        if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        }
+
+        var journalDocs = snapshot.data?.docs ?? [];
+
+        if (searchQuery.isNotEmpty) {
+          journalDocs = journalDocs.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final title = (data['title'] as String?)?.toLowerCase() ?? '';
+            return title.contains(searchQuery.toLowerCase());
+          }).toList();
+        }
+
+        if (journalDocs.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text(
+                'No journals found.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: journalDocs.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            childAspectRatio: 0.75,
+          ),
+          itemBuilder: (context, index) {
+            final doc = journalDocs[index];
+            final data = doc.data() as Map<String, dynamic>;
+
+            final entry = {
+              'id': doc.id,
+              'title': data['title'] ?? 'No Title',
+              'description': data['description'] ?? '',
+              'date': (data['createdAt'] as Timestamp?)?.toDate().toString() ?? '',
+              'imageUrls': List<String>.from(data['imageUrls'] ?? []),
+              'mood': data['mood'] ?? 'happy',
+            };
+
+            return JournalCard(
+              entry: entry,
+              onTap: () {
+                // --- PERBAIKAN DI SINI ---
+                context.push('/journal_detail/${doc.id}');
+              },
+            );
+          },
+        );
       },
     );
   }
