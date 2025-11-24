@@ -8,9 +8,13 @@ import 'package:katahari/pages/journal_page.dart';
 import 'package:katahari/pages/login_page.dart';
 import 'package:katahari/pages/signup_page.dart';
 import 'package:katahari/pages/splashscreen.dart';
+import 'package:katahari/pages/todo/create_todo_page.dart';
 import 'package:katahari/pages/todo/todo_page.dart';
 import '../components/bottom_navigation_shell.dart';
 import '../pages/profile_page.dart';
+import '../pages/todo/edit_todo_page.dart';
+import 'package:katahari/models/todo_model.dart';
+
 
 // Definisikan path sebagai konstanta agar mudah dikelola
 class AppRoutes {
@@ -23,9 +27,10 @@ class AppRoutes {
   static const String journal = '/journal';
   static const String todo = '/todo';
   static const String profile = '/profile';
-  // Jadikan rute detail dan edit sebagai rute top-level yang unik
   static const String journalDetail = '/journal_detail';
   static const String editJournal = '/edit_journal';
+  static const String addTodos = '/addTodos';
+  static const editTodo = '/edit_todo';
 }
 
 GoRouter createRouter() {
@@ -71,6 +76,18 @@ GoRouter createRouter() {
         path: AppRoutes.addJournal,
         builder: (context, state) => const AddJournalPage(),
       ),
+      GoRoute(
+        path: AppRoutes.addTodos,
+        builder: (context, state) => const CreateTodoPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.editTodo,
+        builder: (context, state) {
+          final todo = state.extra as Todo;
+          return EditTodoPage(todo: todo);
+        },
+      ),
+
 
       // Rute-rute ini akan memiliki Navbar
       StatefulShellRoute.indexedStack(

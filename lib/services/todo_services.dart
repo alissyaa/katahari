@@ -37,7 +37,7 @@ class TodoService {
     await _todos.doc(id).update(data);
   }
 
-  // ypdate status
+  // update status
   Future<void> updateStatus(String id, String newStatus) async {
     await _todos.doc(id).update({'status': newStatus.toLowerCase()});
   }
