@@ -40,14 +40,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               children: [
                 _buildPasswordField(
                     label: "Previous Password",
-                    controller: _previousPasswordController),
+                    controller: _previousPasswordController,
+                    hint: "Enter Previous Password"),
                 const SizedBox(height: 16),
                 _buildPasswordField(
-                    label: "New Password", controller: _newPasswordController),
+                    label: "New Password",
+                    controller: _newPasswordController,
+                    hint: "Enter New Password"),
                 const SizedBox(height: 16),
                 _buildPasswordField(
                     label: "Confirm Password",
-                    controller: _confirmPasswordController),
+                    controller: _confirmPasswordController,
+                    hint: "Enter Confirm Password"),
                 const Spacer(),
                 _buildSaveButton(),
                 const SizedBox(height: 370),
@@ -80,22 +84,31 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildPasswordField(
-      {required String label, required TextEditingController controller}) {
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                color: AppColors.secondary)),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: AppColors.secondary,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: true,
           style: TextStyle(color: AppColors.secondary),
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle:
+            GoogleFonts.poppins(color: AppColors.abumuda.withOpacity(0.5)),
             filled: true,
             fillColor: AppColors.primary,
             contentPadding:
@@ -140,9 +153,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         child: Text(
           "Save",
           style: GoogleFonts.poppins(
-              color: AppColors.secondary,
-              fontWeight: FontWeight.w600,
-              fontSize: 18),
+            color: AppColors.secondary,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
         ),
       ),
     );
