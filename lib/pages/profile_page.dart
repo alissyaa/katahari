@@ -16,12 +16,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // Variabel untuk menyimpan data profil pengguna yang akan ditampilkan di UI.
   String _name = "-";
   String _birthday = "-";
   String _mbti = "-";
   Color _cardColor = AppColors.kream;
   Color _headerColor = AppColors.primary;
 
+  // Mengambil informasi pengguna yang sedang login.
   final User? user = FirebaseAuth.instance.currentUser;
   late String userName;
   final String formattedDate =
@@ -30,10 +32,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    // Inisialisasi nama pengguna dan memanggil fungsi untuk mengambil data dari Firestore.
     userName = user?.displayName ?? user?.email?.split('@')[0] ?? 'User';
     _fetchUserData();
   }
 
+  // Fungsi untuk mengambil data spesifik (nama, tgl lahir, mbti) dari dokumen user.
   Future<void> _fetchUserData() async {
     if (user != null) {
       try {
@@ -56,6 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Fungsi yang membuat koneksi real-time ke sub-koleksi 'Journals'.
+  // StreamBuilder akan menggunakan ini untuk update UI secara otomatis.
   Stream<QuerySnapshot> _getJournalsStream() {
     if (user == null) {
       return Stream.empty();
@@ -67,6 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .snapshots();
   }
 
+  // Navigasi ke halaman EditProfilePage dan menunggu hasil.
   void _navigateToEditPage() async {
     final result = await Navigator.push(
       context,
@@ -82,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
 
+    // Jika ada data yang dikembalikan dari EditProfilePage, update UI.
     if (result != null && result is Map<String, dynamic>) {
       setState(() {
         _name = result['name'];
@@ -101,6 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // Navigasi ke halaman detail mood, mengirimkan string mood yang dipilih.
   void _navigateToJournalMoodPage(String mood) {
     Navigator.push(
       context,
@@ -131,12 +140,15 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 28),
               _buildMoodTrackerTitle(),
               const SizedBox(height: 20),
+              // Widget ini secara otomatis akan rebuild saat ada perubahan data di stream.
               StreamBuilder<QuerySnapshot>(
                 stream: _getJournalsStream(),
                 builder: (context, snapshot) {
+                  // Tampilkan loading indicator saat data sedang diambil.
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
+                  // Jika tidak ada data, tampilkan counter dengan nilai 0.
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return _buildAllMoodRows(0, 0, 0, 0);
                   }
@@ -146,6 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   int sadCount = 0;
                   int angryCount = 0;
 
+                  // Looping melalui setiap dokumen jurnal untuk menghitung mood.
                   for (var doc in snapshot.data!.docs) {
                     final data = doc.data() as Map<String, dynamic>;
                     final mood = data['mood'] as String?;
@@ -153,6 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       case 'happy':
                         happyCount++;
                         break;
+                    // Menghitung 'flat' sebagai 'neutral' untuk UI.
                       case 'flat':
                         neutralCount++;
                         break;
@@ -165,6 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     }
                   }
 
+                  // Tampilkan semua baris mood dengan jumlah yang sudah dihitung.
                   return _buildAllMoodRows(
                       happyCount, neutralCount, sadCount, angryCount);
                 },
@@ -177,6 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // Widget untuk membangun semua baris mood counter.
   Widget _buildAllMoodRows(int happy, int neutral, int sad, int angry) {
     return Column(
       children: [
