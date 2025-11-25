@@ -214,73 +214,73 @@ class _AddJournalPageState extends State<AddJournalPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 120.0),
+            child: ListView(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 120.0),
-                  child: ListView(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(formattedDate, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
-                          GestureDetector(
-                            onTap: _showMoodPicker,
-                            child: Image.asset(
-                              _moodAssets[_selectedMood] ?? 'assets/mood_happy.png',
-                              width: 36,
-                              height: 36,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildImageGrid(),
-                      if (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) const SizedBox(height: 16),
-                      TextField(
-                        controller: _titleController,
-                        style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: _textColor),
-                        maxLines: null,
-                        decoration: const InputDecoration.collapsed(hintText: 'Title'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _descriptionController,
-                        style: GoogleFonts.poppins(fontSize: _fontSize, color: _textColor, height: 1.6),
-                        maxLines: null,
-                        decoration: const InputDecoration.collapsed(hintText: 'Start writing your story...'),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          _buildTag(Icons.location_on_outlined, 'Location Here'),
-                          const SizedBox(width: 10),
-                          _buildTag(Icons.music_note_outlined, 'Song Here'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                ..._activeStickers.map((sticker) {
-                  return Positioned(
-                    left: sticker.position.dx,
-                    top: sticker.position.dy,
-                    child: GestureDetector(
-                      onPanUpdate: (details) {
-                        setState(() {
-                          sticker.position += details.delta;
-                        });
-                      },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(formattedDate, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
+                    GestureDetector(
+                      onTap: _showMoodPicker,
                       child: Image.asset(
-                        sticker.assetPath,
-                        width: sticker.size,
-                        height: sticker.size,
+                        _moodAssets[_selectedMood] ?? 'assets/mood_happy.png',
+                        width: 36,
+                        height: 36,
                       ),
                     ),
-                  );
-                }),
-                Positioned(bottom: 30, left: 20, right: 20, child: _buildEditingToolbar()),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildImageGrid(),
+                if (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) const SizedBox(height: 16),
+                TextField(
+                  controller: _titleController,
+                  style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: _textColor),
+                  maxLines: null,
+                  decoration: const InputDecoration.collapsed(hintText: 'Title'),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _descriptionController,
+                  style: GoogleFonts.poppins(fontSize: _fontSize, color: _textColor, height: 1.6),
+                  maxLines: null,
+                  decoration: const InputDecoration.collapsed(hintText: 'Start writing your story...'),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    _buildTag(Icons.location_on_outlined, 'Location Here'),
+                    const SizedBox(width: 10),
+                    _buildTag(Icons.music_note_outlined, 'Song Here'),
+                  ],
+                ),
               ],
             ),
+          ),
+          ..._activeStickers.map((sticker) {
+            return Positioned(
+              left: sticker.position.dx,
+              top: sticker.position.dy,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    sticker.position += details.delta;
+                  });
+                },
+                child: Image.asset(
+                  sticker.assetPath,
+                  width: sticker.size,
+                  height: sticker.size,
+                ),
+              ),
+            );
+          }),
+          Positioned(bottom: 30, left: 20, right: 20, child: _buildEditingToolbar()),
+        ],
+      ),
     );
   }
 

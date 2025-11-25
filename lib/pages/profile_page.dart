@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
 import 'package:katahari/pages/edit_profile_page.dart';
+import 'package:katahari/pages/journal_mood_page.dart';
 import 'package:katahari/pages/settings/settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,11 +19,54 @@ class _ProfilePageState extends State<ProfilePage> {
   String _name = "-";
   String _birthday = "-";
   String _mbti = "-";
-  Color _cardColor = AppColors.screen2;
+  Color _cardColor = AppColors.kream;
   Color _headerColor = AppColors.primary;
 
-  String userName = "User";
-  String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+  final User? user = FirebaseAuth.instance.currentUser;
+  late String userName;
+  final String formattedDate =
+  DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+    userName = user?.displayName ?? user?.email?.split('@')[0] ?? 'User';
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user!.uid)
+            .get();
+
+        if (userDoc.exists && mounted) {
+          setState(() {
+            _name = userDoc.get('name') ?? "-";
+            _birthday = userDoc.get('birthday') ?? "-";
+            _mbti = userDoc.get('mbti') ?? "-";
+            userName = _name;
+          });
+        }
+      } catch (e) {
+        print("Error fetching user data: $e");
+      }
+    }
+  }
+
+
+  Stream<QuerySnapshot> _getJournalsStream() {
+    if (user == null) {
+      return Stream.empty();
+    }
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user!.uid)
+        .collection('Journals')
+        .snapshots();
+  }
 
   void _navigateToEditPage() async {
     final result = await Navigator.push(
@@ -44,6 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _mbti = result['mbti'];
         _cardColor = result['cardColor'];
         _headerColor = result['headerColor'];
+        userName = _name;
       });
     }
   }
@@ -52,6 +99,15 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SettingsPage()),
+    );
+  }
+
+  void _navigateToJournalMoodPage(String mood) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => JournalMoodPage(mood: mood),
+      ),
     );
   }
 
@@ -76,27 +132,97 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 28),
               _buildMoodTrackerTitle(),
               const SizedBox(height: 20),
-              _buildMoodRow(
-                  iconData: Icons.sentiment_very_satisfied,
-                  backgroundColor: AppColors.screen1,
-                  count: 0),
-              _buildMoodRow(
-                  iconData: Icons.sentiment_neutral,
-                  backgroundColor: AppColors.screen2,
-                  count: 0),
-              _buildMoodRow(
-                  iconData: Icons.sentiment_very_dissatisfied,
-                  backgroundColor: AppColors.merah,
-                  count: 0),
-              _buildMoodRow(
-                  iconData: Icons.sentiment_dissatisfied,
-                  backgroundColor: AppColors.button,
-                  count: 0),
+              StreamBuilder<QuerySnapshot>(
+                stream: _getJournalsStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return _buildAllMoodRows(0, 0, 0, 0);
+                  }
+
+                  int happyCount = 0;
+                  int neutralCount = 0;
+                  int sadCount = 0;
+                  int angryCount = 0;
+
+                  for (var doc in snapshot.data!.docs) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final mood = data['mood'] as String?;
+                    switch (mood) {
+                      case 'happy': // Bahagia
+                        happyCount++;
+                        break;
+                    // --- PERBAIKAN DI SINI ---
+                    // Mengubah 'neutral' menjadi 'flat' agar sesuai dengan data dari JournalPage
+                      case 'flat':
+                        neutralCount++;
+                        break;
+                      case 'sad': // Sedih
+                        sadCount++;
+                        break;
+                      case 'angry': // Marah
+                        angryCount++;
+                        break;
+                    }
+                  }
+
+                  return _buildAllMoodRows(
+                      happyCount, neutralCount, sadCount, angryCount);
+                },
+              ),
               const SizedBox(height: 40),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // --- Widget ini memetakan UI ke string mood yang benar ---
+  Widget _buildAllMoodRows(int happy, int neutral, int sad, int angry) {
+    return Column(
+      children: [
+        // 1. Happy (Senang)
+        GestureDetector(
+          onTap: () => _navigateToJournalMoodPage('happy'),
+          child: _buildMoodRow(
+            iconData: Icons.sentiment_very_satisfied, // Ikon standar
+            backgroundColor: AppColors.screen1, // Warna hijau
+            count: happy,
+          ),
+        ),
+        // 2. Neutral (Biasa Aja) -> yang sekarang dihitung dari 'flat'
+        GestureDetector(
+          // --- PERBAIKAN DI SINI ---
+          // Mengubah 'neutral' menjadi 'flat' agar halaman filter juga benar
+          onTap: () => _navigateToJournalMoodPage('flat'),
+          child: _buildMoodRow(
+            iconData: Icons.sentiment_neutral, // Ikon standar
+            backgroundColor: AppColors.screen2, // Warna kuning
+            count: neutral,
+          ),
+        ),
+        // 3. Sad (Sedih)
+        GestureDetector(
+          onTap: () => _navigateToJournalMoodPage('sad'),
+          child: _buildMoodRow(
+            iconData: Icons.sentiment_very_dissatisfied, // Ikon standar
+            backgroundColor: AppColors.button, // Warna biru
+            count: sad,
+          ),
+        ),
+        // 4. Angry (Marah)
+        GestureDetector(
+          onTap: () => _navigateToJournalMoodPage('angry'),
+          child: _buildMoodRow(
+            iconData: Icons.sentiment_dissatisfied, // Ikon standar
+            backgroundColor: AppColors.merah, // Warna merah
+            count: angry,
+          ),
+        ),
+      ],
     );
   }
 
@@ -169,10 +295,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildEmojiCircle(
                       Icons.sentiment_very_satisfied, AppColors.screen1),
                   const SizedBox(width: 6),
-                  _buildEmojiCircle(Icons.sentiment_neutral, AppColors.screen2),
+                  _buildEmojiCircle(
+                      Icons.sentiment_neutral, AppColors.screen2),
                   const SizedBox(width: 6),
                   _buildEmojiCircle(
-                      Icons.sentiment_very_dissatisfied, AppColors.merah),
+                      Icons.sentiment_very_dissatisfied, AppColors.button),
+                  const SizedBox(width: 6),
+                  _buildEmojiCircle(
+                      Icons.sentiment_dissatisfied, AppColors.merah),
                 ]),
               ],
             ),
@@ -240,7 +370,7 @@ class _ProfilePageState extends State<ProfilePage> {
         border: Border.all(color: AppColors.secondary, width: 1.5),
       ),
       child: Text(
-        "User's Mood Tracker",
+        "$userName's Mood Tracker",
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.w600,
           color: AppColors.secondary,
