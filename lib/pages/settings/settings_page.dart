@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/constant/app_colors.dart';
 import 'package:katahari/pages/settings/account_information_page.dart';
@@ -6,6 +8,20 @@ import 'package:katahari/pages/settings/change_password_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      if (!context.mounted) return;
+      await FirebaseAuth.instance.signOut();
+      context.go('/first');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to sign out: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +42,8 @@ class SettingsPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const AccountInformationPage()),
+                    builder: (context) => const AccountInformationPage(),
+                  ),
                 );
               },
             ),
@@ -40,7 +57,8 @@ class SettingsPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ChangePasswordPage()),
+                    builder: (context) => const ChangePasswordPage(),
+                  ),
                 );
               },
             ),
@@ -129,7 +147,7 @@ class SettingsPage extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           backgroundColor: AppColors.primary,
           shape: RoundedRectangleBorder(
@@ -167,7 +185,7 @@ class SettingsPage extends StatelessWidget {
                       label: "Yes",
                       backgroundColor: AppColors.screen1,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        _signOut(context);
                       },
                     ),
                     _buildDialogButton(
@@ -175,7 +193,7 @@ class SettingsPage extends StatelessWidget {
                       label: "No",
                       backgroundColor: AppColors.merah,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.of(dialogContext).pop();
                       },
                     ),
                   ],

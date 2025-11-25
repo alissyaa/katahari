@@ -56,7 +56,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   Stream<QuerySnapshot> _getJournalsStream() {
     if (user == null) {
       return Stream.empty();
@@ -151,18 +150,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     final data = doc.data() as Map<String, dynamic>;
                     final mood = data['mood'] as String?;
                     switch (mood) {
-                      case 'happy': // Bahagia
+                      case 'happy':
                         happyCount++;
                         break;
-                    // --- PERBAIKAN DI SINI ---
-                    // Mengubah 'neutral' menjadi 'flat' agar sesuai dengan data dari JournalPage
                       case 'flat':
                         neutralCount++;
                         break;
-                      case 'sad': // Sedih
+                      case 'sad':
                         sadCount++;
                         break;
-                      case 'angry': // Marah
+                      case 'angry':
                         angryCount++;
                         break;
                     }
@@ -180,45 +177,38 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // --- Widget ini memetakan UI ke string mood yang benar ---
   Widget _buildAllMoodRows(int happy, int neutral, int sad, int angry) {
     return Column(
       children: [
-        // 1. Happy (Senang)
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('happy'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_very_satisfied, // Ikon standar
-            backgroundColor: AppColors.screen1, // Warna hijau
+            iconData: Icons.sentiment_very_satisfied,
+            backgroundColor: AppColors.screen1,
             count: happy,
           ),
         ),
-        // 2. Neutral (Biasa Aja) -> yang sekarang dihitung dari 'flat'
         GestureDetector(
-          // --- PERBAIKAN DI SINI ---
-          // Mengubah 'neutral' menjadi 'flat' agar halaman filter juga benar
           onTap: () => _navigateToJournalMoodPage('flat'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_neutral, // Ikon standar
-            backgroundColor: AppColors.screen2, // Warna kuning
+            iconData: Icons.sentiment_neutral,
+            backgroundColor: AppColors.screen2,
             count: neutral,
           ),
         ),
-        // 3. Sad (Sedih)
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('sad'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_very_dissatisfied, // Ikon standar
-            backgroundColor: AppColors.button, // Warna biru
+            iconData: Icons.sentiment_very_dissatisfied,
+            backgroundColor: AppColors.button,
             count: sad,
           ),
         ),
-        // 4. Angry (Marah)
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('angry'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_dissatisfied, // Ikon standar
-            backgroundColor: AppColors.merah, // Warna merah
+            iconData: Icons.sentiment_dissatisfied,
+            backgroundColor: AppColors.merah,
             count: angry,
           ),
         ),
@@ -238,22 +228,32 @@ class _ProfilePageState extends State<ProfilePage> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Hello, $userName',
-                style: GoogleFonts.poppins(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.secondary)),
+            Text(
+              'Hello, $userName',
+              style: GoogleFonts.poppins(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondary,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(formattedDate,
-                style: GoogleFonts.poppins(
-                    fontSize: 14, color: AppColors.abumuda)),
+            Text(
+              formattedDate,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: AppColors.abumuda,
+              ),
+            ),
           ],
         ),
         InkWell(
           onTap: _navigateToSettingsPage,
           borderRadius: BorderRadius.circular(20),
-          child: Icon(Icons.settings_outlined,
-              size: 30, color: AppColors.secondary),
+          child: Icon(
+            Icons.settings_outlined,
+            size: 30,
+            color: AppColors.secondary,
+          ),
         ),
       ],
     );
@@ -273,37 +273,49 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
               color: _headerColor,
               borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(14),
-                  topRight: Radius.circular(14)),
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
+              ),
               border: Border(
-                  bottom: BorderSide(color: AppColors.secondary, width: 1.5)),
+                bottom: BorderSide(color: AppColors.secondary, width: 1.5),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: [
-                  Icon(Icons.auto_awesome,
-                      size: 20, color: AppColors.secondary),
-                  const SizedBox(width: 8),
-                  Text('katahari.',
+                Row(
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 20,
+                      color: AppColors.secondary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'katahari.',
                       style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: AppColors.secondary)),
-                ]),
-                Row(children: [
-                  _buildEmojiCircle(
-                      Icons.sentiment_very_satisfied, AppColors.screen1),
-                  const SizedBox(width: 6),
-                  _buildEmojiCircle(
-                      Icons.sentiment_neutral, AppColors.screen2),
-                  const SizedBox(width: 6),
-                  _buildEmojiCircle(
-                      Icons.sentiment_very_dissatisfied, AppColors.button),
-                  const SizedBox(width: 6),
-                  _buildEmojiCircle(
-                      Icons.sentiment_dissatisfied, AppColors.merah),
-                ]),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    _buildEmojiCircle(
+                        Icons.sentiment_very_satisfied, AppColors.screen1),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle(
+                        Icons.sentiment_neutral, AppColors.screen2),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle(
+                        Icons.sentiment_very_dissatisfied, AppColors.button),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle(
+                        Icons.sentiment_dissatisfied, AppColors.merah),
+                  ],
+                ),
               ],
             ),
           ),
@@ -317,27 +329,35 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                    Border.all(color: AppColors.secondary, width: 1.5),
+                    border: Border.all(color: AppColors.secondary, width: 1.5),
                   ),
-                  child: Icon(Icons.add_a_photo,
-                      size: 32, color: AppColors.secondary),
+                  child: Icon(
+                    Icons.add_a_photo,
+                    size: 32,
+                    color: AppColors.secondary,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Name\n$_name",
-                        style: GoogleFonts.poppins(
-                            height: 1.5, color: AppColors.secondary)),
+                    Text(
+                      "Name\n$_name",
+                      style: GoogleFonts.poppins(
+                          height: 1.5, color: AppColors.secondary),
+                    ),
                     const SizedBox(height: 4),
-                    Text("Birthday\n$_birthday",
-                        style: GoogleFonts.poppins(
-                            height: 1.5, color: AppColors.secondary)),
+                    Text(
+                      "Birthday\n$_birthday",
+                      style: GoogleFonts.poppins(
+                          height: 1.5, color: AppColors.secondary),
+                    ),
                     const SizedBox(height: 4),
-                    Text("MBTI\n$_mbti",
-                        style: GoogleFonts.poppins(
-                            height: 1.5, color: AppColors.secondary)),
+                    Text(
+                      "MBTI\n$_mbti",
+                      style: GoogleFonts.poppins(
+                          height: 1.5, color: AppColors.secondary),
+                    ),
                   ],
                 )
               ],
@@ -379,9 +399,11 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMoodRow({required IconData iconData,
+  Widget _buildMoodRow({
+    required IconData iconData,
     required Color backgroundColor,
-    required int count}) {
+    required int count,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -426,8 +448,11 @@ class _ProfilePageState extends State<ProfilePage> {
               color: backgroundColor,
               border: Border.all(color: AppColors.secondary, width: 1.5),
             ),
-            child: Icon(Icons.arrow_forward_ios,
-                size: 14, color: AppColors.secondary),
+            child: Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: AppColors.secondary,
+            ),
           ),
         ],
       ),
