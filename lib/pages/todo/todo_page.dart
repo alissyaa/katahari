@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:katahari/services/todo_services.dart';
 import 'package:katahari/models/todo_model.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
-import 'package:katahari/pages/todo/create_todo_page.dart';
 import 'package:intl/intl.dart';
+import 'package:katahari/constant/app_colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../config/routes.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -13,24 +17,36 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
-  String selectedStatus = "ongoing";
   final TodoService _service = TodoService();
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   bool isDropdownOpen = false;
 
   final GlobalKey _dropdownKey = GlobalKey();
+  String selectedStatus = "ongoing";
 
   final List<Map<String, dynamic>> statusOptions = [
-    {"label": "Completed", "value": "completed", "color": Color(0xFFD6F8C5)},
-    {"label": "Ongoing", "value": "ongoing", "color": Color(0xFFFFEEAD)},
-    {"label": "Missed", "value": "missed", "color": Color(0xFFFFB3B3)},
+    {"label": "Completed", "value": "completed", "color": AppColors.screen1},
+    {"label": "Ongoing", "value": "ongoing", "color": AppColors.screen2},
+    {"label": "Missed", "value": "missed", "color": AppColors.merah},
   ];
+
+  final List<Map<String, dynamic>> labelOptions = [
+    {"label": "Work", "value": "work", "icon": Icons.work_outline, "color": AppColors.button},
+    {"label": "Personal", "value": "personal", "icon": Icons.person_outline, "color": Colors.purple},
+    {"label": "Shopping", "value": "shopping", "icon": Icons.shopping_cart_outlined, "color": AppColors.merah},
+    {"label": "Study", "value": "study", "icon": Icons.school_outlined, "color": AppColors.screen2},
+  ];
+
+  User get user => FirebaseAuth.instance.currentUser!;
+
+  String get loggedInUser {
+    return user.displayName ?? user.email?.split('@')[0] ?? 'User';
+  }
 
   @override
   void initState() {
     super.initState();
-    // Jalankan markMissedTodos saat halaman dibuka
     _service.markMissedTodos();
   }
 
@@ -42,33 +58,20 @@ class _TodoPageState extends State<TodoPage> {
 
   @override
   Widget build(BuildContext context) {
+    String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           children: [
-            // ====================
-            // HEADER
-            // ====================
-            _buildHeader(),
+            _buildHeader(loggedInUser, formattedDate),
             const SizedBox(height: 30),
-
-            // ====================
-            // HOW WAS YOUR DAY CARD
-            // ====================
             const HowWasYourDayCard(),
             const SizedBox(height: 30),
-
-            // ====================
-            // TASK HEADER + DROPDOWN + PLUS BUTTON
-            // ====================
             _buildTaskHeader(),
             const SizedBox(height: 20),
-
-            // ====================
-            // TODO LIST / EMPTY STATE
-            // ====================
             StreamBuilder<List<Todo>>(
               stream: _service.getTodosByStatus(selectedStatus),
               builder: (context, snapshot) {
@@ -100,18 +103,14 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ====================
-  // HEADER
-  // ====================
-  Widget _buildHeader() {
-    final now = DateTime.now();
-    final dateFormat = DateFormat('EEEE, d MMMM yyyy');
+  // ================= HEADER =================
 
+  Widget _buildHeader(String userName, String date) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hello, User',
+          'Hello, $userName',
           style: const TextStyle(
             fontSize: 34,
             fontWeight: FontWeight.bold,
@@ -120,10 +119,10 @@ class _TodoPageState extends State<TodoPage> {
         ),
         const SizedBox(height: 4),
         Text(
-          dateFormat.format(now),
+          date,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[600],
+            color: AppColors.abu,
             fontFamily: 'Poppins',
           ),
         ),
@@ -131,16 +130,15 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ====================
-  // TASK HEADER + DROPDOWN + PLUS BUTTON
-  // ====================
+  // ================= TASK HEADER + ADD BUTTON =================
+
   Widget _buildTaskHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        const Text(
           'Task',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
@@ -150,24 +148,24 @@ class _TodoPageState extends State<TodoPage> {
           children: [
             _buildStatusDropdown(),
             const SizedBox(width: 8),
-            // Tombol Plus
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CreateTodoPage()),
-                );
+                context.push(AppRoutes.addTodos);
               },
               child: Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Color(0xFF6BA6FF),
+                  color: AppColors.button,
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.secondary,
+                    width: 2,
+                  ),
                 ),
                 child: const Icon(
                   Icons.add,
-                  color: Colors.white,
+                  color: AppColors.secondary,
                   size: 24,
                 ),
               ),
@@ -177,6 +175,8 @@ class _TodoPageState extends State<TodoPage> {
       ],
     );
   }
+
+  // ================= DROPDOWN STATUS =================
 
   Widget _buildStatusDropdown() {
     Color mainColor = statusOptions.firstWhere(
@@ -200,7 +200,7 @@ class _TodoPageState extends State<TodoPage> {
           decoration: BoxDecoration(
             color: mainColor,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.black, width: 2),
+            border: Border.all(color: AppColors.secondary, width: 2),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -210,14 +210,14 @@ class _TodoPageState extends State<TodoPage> {
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: AppColors.secondary,
                   fontFamily: 'Poppins',
                 ),
               ),
               const SizedBox(width: 6),
               Icon(
                 isDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: Colors.black,
+                color: AppColors.secondary,
               )
             ],
           ),
@@ -275,7 +275,7 @@ class _TodoPageState extends State<TodoPage> {
                     decoration: BoxDecoration(
                       color: status["color"],
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.black, width: 2),
+                      border: Border.all(color: AppColors.secondary, width: 2),
                     ),
                     child: Center(
                       child: Text(
@@ -283,7 +283,7 @@ class _TodoPageState extends State<TodoPage> {
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: AppColors.secondary,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -298,9 +298,8 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ====================
-  // EMPTY STATE
-  // ====================
+  // ================= EMPTY STATE =================
+
   Widget _buildEmpty(String status) {
     String assetImage;
     String message;
@@ -336,7 +335,7 @@ class _TodoPageState extends State<TodoPage> {
             message,
             style: TextStyle(
               fontSize: 15,
-              color: Colors.grey[600],
+              color: AppColors.abumuda,
               fontWeight: FontWeight.w500,
               fontFamily: 'Poppins',
             ),
@@ -346,109 +345,306 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ====================
-  // TODO CARD
-  // ====================
+  // ================= TODO CARD (BISA DI-TAP) =================
+
   Widget _buildTodoCard(Todo todo) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.black, width: 1), // hard black border
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          )
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // ICON LABEL BOX
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: _getLabelColor(todo.label).withOpacity(0.18),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black, width: 1),
-            ),
-            child: Icon(
-              _getLabelIcon(todo.label),
-              color: _getLabelColor(todo.label),
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-
-          // TITLE + LABEL + TIME
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  todo.title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                    color: Colors.black,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        _showTodoDetailDialog(todo);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: AppColors.secondary, width: 1.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.secondary, width: 1.5),
                 ),
-
-                const SizedBox(height: 4),
-
-                Text(
-                  todo.deadlineDate != null
-                      ? "${todo.label} | ${DateFormat('EEE, d MMM yyyy HH.mm').format(todo.deadlineDate!)}"
-                      : "${todo.label} | No deadline",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[700],
-                    fontFamily: 'Poppins',
-                  ),
-                )
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          // CIRCLE TOGGLE (COMPLETED STYLE)
-          GestureDetector(
-            onTap: () async {
-              if (todo.status == 'ongoing') {
-                await _service.updateStatus(todo.id, 'completed');
-              } else if (todo.status == 'completed') {
-                await _service.updateStatus(todo.id, 'ongoing');
-              }
-            },
-            child: Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.black,
-                  width: 2,
+                child: Icon(
+                  _getLabelIcon(todo.label),
+                  color: _getLabelColor(todo.label),
+                  size: 24,
                 ),
-                color:
-                todo.status == 'completed' ? Colors.black : Colors.white,
               ),
-              child: todo.status == 'completed'
-                  ? const Icon(Icons.check, color: Colors.white, size: 18)
-                  : null,
-            ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      todo.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: AppColors.secondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      todo.deadlineDate != null
+                          ? "${todo.label} | ${DateFormat('dd MMM yyyy HH:mm').format(todo.deadlineDate!)}"
+                          : "${todo.label} | No deadline",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.secondary,
+                        fontFamily: 'Poppins',
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: () async {
+                  // supaya tidak ikut trigger onTap card, kita stop event bubble pakai gesture ini
+                  if (todo.status == 'ongoing') {
+                    await _service.updateStatus(todo.id, 'completed');
+                  } else if (todo.status == 'completed') {
+                    await _service.updateStatus(todo.id, 'ongoing');
+                  }
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.secondary,
+                      width: 1.5,
+                    ),
+                    color: todo.status == 'completed'
+                        ? AppColors.secondary
+                        : AppColors.primary,
+                  ),
+                  child: todo.status == 'completed'
+                      ? const Icon(Icons.check,
+                      color: AppColors.primary, size: 18)
+                      : null,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
+  // ================= POPUP DETAIL TODO =================
+
+  Future<void> _showTodoDetailDialog(Todo todo) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(
+              color: AppColors.secondary,
+              width: 1.5,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // TOP: status + date
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: AppColors.secondary,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        todo.status, // <-- ganti repeatType jadi status
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: AppColors.secondary,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        todo.deadlineDate != null
+                            ? DateFormat('dd MMM yyyy HH:mm')
+                            .format(todo.deadlineDate!)
+                            : 'No deadline',
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // TITLE + ICON
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all( // <-- Border.all, bukan BorderSide
+                          color: AppColors.secondary,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        _getLabelIcon(todo.label),
+                        color: _getLabelColor(todo.label),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        todo.title,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // DESCRIPTION
+                Container(
+                  width: double.infinity,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: AppColors.secondary,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    todo.description.isNotEmpty ? todo.description : 'No description',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // BUTTONS
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // EDIT
+                    SizedBox(
+                      width: 110,
+                      height: 40,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: AppColors.secondary, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          backgroundColor: AppColors.primary,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          context.push(
+                            AppRoutes.editTodo,
+                            extra: todo,
+                          );
+                        },
+                        child: const Text(
+                          'Edit',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // DELETE
+                    SizedBox(
+                      width: 110,
+                      height: 40,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: AppColors.merah, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          backgroundColor: AppColors.primary,
+                        ),
+                        onPressed: () async {
+                          await _service.deleteTodo(todo.id);
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            color: AppColors.merah,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   IconData _getLabelIcon(String label) {
     switch (label.toLowerCase()) {
@@ -468,28 +664,15 @@ class _TodoPageState extends State<TodoPage> {
   Color _getLabelColor(String label) {
     switch (label.toLowerCase()) {
       case 'work':
-        return Colors.blue;
+        return AppColors.button;
       case 'personal':
         return Colors.purple;
       case 'shopping':
-        return Colors.pink;
+        return AppColors.merah;
       case 'study':
-        return Colors.orange;
+        return AppColors.screen2;
       default:
-        return Colors.grey;
-    }
-  }
-
-  Color _getStatusColorForCard(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return Colors.green;
-      case 'ongoing':
-        return Colors.orange;
-      case 'missed':
-        return Colors.red;
-      default:
-        return Colors.grey;
+        return AppColors.abumuda;
     }
   }
 }
