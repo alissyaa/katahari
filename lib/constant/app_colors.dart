@@ -10,4 +10,5 @@ class AppColors {
   static const Color merah = Color(0xFFFFA1A1);
   static const Color abu = Color(0xFF323232);
   static const Color abumuda = Color(0xFF858585);
+  static const Color kream = Color(0xFFFFF6EB);
 }

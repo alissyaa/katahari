@@ -32,7 +32,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   final List<Color> headerColorOptions = [
     AppColors.primary,
-    AppColors.secondary,
     AppColors.merah,
     AppColors.screen1,
     AppColors.screen2,
@@ -40,9 +39,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   ];
 
   Color getBodyColorForHeader(Color headerColor) {
-    if (headerColor == AppColors.button) return AppColors.primary;
-    if (headerColor == AppColors.screen1) return AppColors.screen2;
-    return AppColors.screen2;
+    if (headerColor == AppColors.button) return AppColors.kream;
+    if (headerColor == AppColors.screen1) return AppColors.kream;
+    return AppColors.kream;
   }
 
   @override
