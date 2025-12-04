@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class MoodDropdown extends StatefulWidget {
   final Function(String) onSelected;
@@ -35,12 +36,13 @@ class _MoodDropdownState extends State<MoodDropdown> {
   }
 
   final List<Map<String, dynamic>> moods = [
-    {"label": "All", "color": Color(0xFFE0E0E0)},
-    {"label": "Happy", "color": Color(0xFFD6F8C5)},
-    {"label": "Sad", "color": Color(0xFFBCD9FF)},
-    {"label": "Flat", "color": Color(0xFFFFEEAD)},
-    {"label": "Angry", "color": Color(0xFFFFB3B3)},
+    {"label": "All", "color": AppColors.primary},
+    {"label": "Happy", "color": AppColors.screen1},
+    {"label": "Sad", "color": AppColors.button},
+    {"label": "Flat", "color": AppColors.screen1},
+    {"label": "Angry", "color": AppColors.merah},
   ];
+
 
   void toggleDropdown() {
     if (isOpen) {
@@ -91,7 +93,7 @@ class _MoodDropdownState extends State<MoodDropdown> {
                     decoration: BoxDecoration(
                       color: m["color"],
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.black, width: 2),
+                      border: Border.all(color: AppColors.secondary, width: 2),
                     ),
                     child: Center(
                       child: Text(
@@ -99,7 +101,7 @@ class _MoodDropdownState extends State<MoodDropdown> {
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: AppColors.secondary,
                         ),
                       ),
                     ),

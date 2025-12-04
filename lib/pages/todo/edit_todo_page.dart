@@ -2,28 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/services/todo_services.dart';
-import '../../config/routes.dart';
+import 'package:katahari/models/todo_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../constant/app_colors.dart';
 
-class CreateTodoPage extends StatefulWidget {
-  const CreateTodoPage({super.key});
+class EditTodoPage extends StatefulWidget {
+  final Todo todo;
+
+  const EditTodoPage({super.key, required this.todo});
 
   @override
-  State<CreateTodoPage> createState() => _CreateTodoPageState();
+  State<EditTodoPage> createState() => _EditTodoPageState();
 }
 
-class _CreateTodoPageState extends State<CreateTodoPage> {
+class _EditTodoPageState extends State<EditTodoPage> {
   final _formKey = GlobalKey<FormState>();
   final TodoService _service = TodoService();
 
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
 
   String selectedLabel = '';
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
-  bool isCreating = false;
+  bool isSaving = false;
 
   final List<Map<String, dynamic>> labelOptions = [
     {'label': 'Work', 'icon': Icons.work_outline, 'color': const Color(0xFF6BA6FF)},
@@ -35,6 +38,38 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+
+    // Isi awal dari Todo yang dikirim
+    _titleController = TextEditingController(text: widget.todo.title);
+    _descriptionController = TextEditingController(text: widget.todo.description);
+    selectedLabel = widget.todo.label;
+
+    // Deadline awal
+    if (widget.todo.deadlineDate != null) {
+      selectedDate = widget.todo.deadlineDate;
+
+      if (widget.todo.deadlineTime.isNotEmpty) {
+        try {
+          final parsedTime = DateFormat.jm().parse(widget.todo.deadlineTime);
+          selectedTime = TimeOfDay.fromDateTime(parsedTime);
+        } catch (_) {
+          selectedTime = TimeOfDay(
+            hour: widget.todo.deadlineDate!.hour,
+            minute: widget.todo.deadlineDate!.minute,
+          );
+        }
+      } else {
+        selectedTime = TimeOfDay(
+          hour: widget.todo.deadlineDate!.hour,
+          minute: widget.todo.deadlineDate!.minute,
+        );
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
@@ -44,7 +79,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   TextStyle get _labelTextStyle => GoogleFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    fontStyle: FontStyle.italic, // <- italic untuk Title, Label, dll
+    fontStyle: FontStyle.italic,
   );
 
   @override
@@ -61,7 +96,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Task',
+          'Edit Task',
           style: GoogleFonts.poppins(
             color: Colors.black,
             fontSize: 20,
@@ -182,24 +217,24 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
                 ),
                 const SizedBox(height: 40),
 
-                // Button Create
+                // Button Save
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: isCreating ? null : _createTodo,
+                    onPressed: isSaving ? null : _saveTodo,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.button,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide( // stroke button
+                        side: const BorderSide( // stroke
                           color: AppColors.secondary,
                           width: 2,
                         ),
                       ),
                       elevation: 0,
                     ),
-                    child: isCreating
+                    child: isSaving
                         ? const SizedBox(
                       width: 24,
                       height: 24,
@@ -209,7 +244,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
                       ),
                     )
                         : Text(
-                      'Create',
+                      'Save',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -249,7 +284,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1), // stroke
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
@@ -259,19 +294,21 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(color: Color(0xFF6BA6FF), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       ),
       validator: validator,
     );
   }
 
   Widget _roundedContainer({required Widget child}) {
-    return Container(
+    return Container
+      (
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.grey[400]!, width: 1), // stroke
+        border: Border.all(color: Colors.grey[400]!, width: 1),
       ),
       child: child,
     );
@@ -291,7 +328,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1), // stroke
+          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
@@ -301,7 +338,8 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
           borderRadius: BorderRadius.circular(30),
           borderSide: const BorderSide(color: Color(0xFF6BA6FF), width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       ),
       items: labelOptions.map((label) {
         return DropdownMenuItem<String>(
@@ -337,7 +375,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
@@ -351,7 +389,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   Future<void> _pickTime() async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: selectedTime ?? TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
@@ -360,9 +398,9 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     }
   }
 
-  // ========= Create =========
+  // ========= Save (Update) =========
 
-  Future<void> _createTodo() async {
+  Future<void> _saveTodo() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -375,7 +413,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     }
 
     setState(() {
-      isCreating = true;
+      isSaving = true;
     });
 
     try {
@@ -387,18 +425,21 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         selectedTime!.minute,
       );
 
-      await _service.createTodo(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        label: selectedLabel,
-        deadlineDate: deadlineDateTime,
-        deadlineTime: selectedTime!.format(context),
-        status: 'ongoing',
+      await _service.updateTodo(
+        widget.todo.id,
+        {
+          'title': _titleController.text.trim(),
+          'description': _descriptionController.text.trim(),
+          'label': selectedLabel,
+          'deadlineDate': Timestamp.fromDate(deadlineDateTime),
+          'deadlineTime': selectedTime!.format(context),
+          'status': widget.todo.status.toLowerCase(),
+        },
       );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task created successfully!')),
+          const SnackBar(content: Text('Task updated successfully!')),
         );
         Navigator.pop(context);
       }
@@ -411,7 +452,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     } finally {
       if (mounted) {
         setState(() {
-          isCreating = false;
+          isSaving = false;
         });
       }
     }

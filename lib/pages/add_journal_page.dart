@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:path/path.dart' as path;
+import 'package:katahari/constant/app_colors.dart';
 
 class Sticker {
   final String assetPath;
@@ -218,6 +220,10 @@ class _AddJournalPageState extends State<AddJournalPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 120.0),
+            child: ListView(
               children: [
                 SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -286,6 +292,28 @@ class _AddJournalPageState extends State<AddJournalPage> {
                 }),
               ],
             ),
+          ),
+          ..._activeStickers.map((sticker) {
+            return Positioned(
+              left: sticker.position.dx,
+              top: sticker.position.dy,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    sticker.position += details.delta;
+                  });
+                },
+                child: Image.asset(
+                  sticker.assetPath,
+                  width: sticker.size,
+                  height: sticker.size,
+                ),
+              ),
+            );
+          }),
+          Positioned(bottom: 30, left: 20, right: 20, child: _buildEditingToolbar()),
+        ],
+      ),
     );
   }
 

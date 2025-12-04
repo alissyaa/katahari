@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class JournalCard extends StatelessWidget {
   final Map<String, dynamic> entry;
@@ -7,7 +8,6 @@ class JournalCard extends StatelessWidget {
 
   const JournalCard({super.key, required this.entry, this.onTap});
 
-  // --- Daftar Aset Mood ---
   static const Map<String, String> _moodAssets = {
     'happy': 'assets/mood_happy.png',
     'flat': 'assets/mood_flat.png',
@@ -18,21 +18,22 @@ class JournalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageUrls = entry['imageUrls'] as List?;
-    final firstImage = imageUrls != null && imageUrls.isNotEmpty ? imageUrls.first : null;
+    final firstImage =
+    imageUrls != null && imageUrls.isNotEmpty ? imageUrls.first : null;
     final mood = entry['mood'] as String? ?? 'happy';
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: firstImage == null ? const Color(0xFFF0F0F0) : Colors.transparent,
+          color: firstImage == null ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black, width: 2),
+          border: Border.all(color: AppColors.secondary, width: 2),
           image: firstImage != null
               ? DecorationImage(
-                  image: NetworkImage(firstImage),
-                  fit: BoxFit.cover,
-                )
+            image: NetworkImage(firstImage),
+            fit: BoxFit.cover,
+          )
               : null,
         ),
         child: ClipRRect(
@@ -43,12 +44,16 @@ class JournalCard extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                      colors: [
+                        AppColors.secondary.withOpacity(0.7),
+                        Colors.transparent
+                      ],
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                     ),
                   ),
                 ),
+
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -57,16 +62,17 @@ class JournalCard extends StatelessWidget {
                       : MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Mood icon for cards without image
                     if (firstImage == null)
                       Align(
                         alignment: Alignment.topRight,
-                        // --- PERBAIKAN DI SINI: Menggunakan Image.asset ---
                         child: Image.asset(
                           _moodAssets[mood] ?? _moodAssets['happy']!,
                           width: 30,
                           height: 30,
                         ),
                       ),
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -75,7 +81,9 @@ class JournalCard extends StatelessWidget {
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: firstImage != null ? Colors.white : Colors.black,
+                            color: firstImage != null
+                                ? AppColors.primary
+                                : AppColors.secondary,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -85,7 +93,9 @@ class JournalCard extends StatelessWidget {
                           entry['date'],
                           style: GoogleFonts.poppins(
                             fontSize: 12,
-                            color: firstImage != null ? Colors.white70 : Colors.grey[600],
+                            color: firstImage != null
+                                ? AppColors.primary.withOpacity(0.7)
+                                : AppColors.secondary.withOpacity(0.6),
                           ),
                         ),
                       ],
@@ -93,6 +103,8 @@ class JournalCard extends StatelessWidget {
                   ],
                 ),
               ),
+
+              // Mood icon for cards with image
               if (firstImage != null)
                 Positioned(
                   top: 10,
@@ -100,10 +112,9 @@ class JournalCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
+                      color: AppColors.secondary.withOpacity(0.3),
                       shape: BoxShape.circle,
                     ),
-                    // --- PERBAIKAN DI SINI: Menggunakan Image.asset ---
                     child: Image.asset(
                       _moodAssets[mood] ?? _moodAssets['happy']!,
                       width: 24,

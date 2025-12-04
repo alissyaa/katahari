@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/config/routes.dart';
 import 'package:video_player/video_player.dart';
+import 'package:katahari/constant/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,7 +26,6 @@ class _LoginPageState extends State<LoginPage>
   void initState() {
     super.initState();
 
-    // Video controller
     _eyesController = VideoPlayerController.asset('assets/mata_tiga.mp4')
       ..initialize().then((_) {
         setState(() {});
@@ -35,9 +33,10 @@ class _LoginPageState extends State<LoginPage>
       });
     _eyesController.setLooping(false);
 
-    // Fade animation
-    _fadeController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
     _fadeAnimation =
         CurvedAnimation(parent: _fadeController, curve: Curves.easeIn);
     _fadeController.forward();
@@ -82,16 +81,15 @@ class _LoginPageState extends State<LoginPage>
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(errorMessage),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppColors.merah,
       ));
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F1F2),
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -107,18 +105,20 @@ class _LoginPageState extends State<LoginPage>
                     child: VideoPlayer(_eyesController),
                   ),
                 )
-                    : const SizedBox(height: 240), // Placeholder to prevent layout jump
+                    : const SizedBox(height: 240),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
                     Text(
                       "Hey, There,\nYou're Back!",
                       style: GoogleFonts.poppins(
-                          fontSize: 30, fontWeight: FontWeight.bold, height: 1.2),
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                      ),
                     ),
                     const SizedBox(height: 35),
 
@@ -134,53 +134,48 @@ class _LoginPageState extends State<LoginPage>
                         child: Text(
                           "Forgot Password?",
                           style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.secondary,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
 
-                    // Signup link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Don't have an account?",
-                            style: GoogleFonts.poppins(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16)),
+                        Text(
+                          "Don't have an account?",
+                          style: GoogleFonts.poppins(
+                            color: AppColors.abumuda,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
                         TextButton(
                           onPressed: () => context.go('/signup'),
                           child: Text(
                             "Sign Up",
                             style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                                fontSize: 16),
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.secondary,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ],
                     ),
 
-                    // Login button (match text field style)
-                    const SizedBox(height: 32),OutlinedButton(
+                    const SizedBox(height: 32),
+
+                    OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: const Color(0xFFA9CCEF),
+                        backgroundColor: AppColors.button,
                         minimumSize: const Size(double.infinity, 50),
-                        side: const BorderSide(color: Color(0xFF0C1212)),
+                        side: const BorderSide(color: AppColors.secondary),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
-                        ),
-                      ).copyWith(
-                        overlayColor: WidgetStateProperty.resolveWith<Color?>(
-                              (Set<WidgetState> states) {
-                            if (states.contains(WidgetState.pressed)) {
-                              return const Color(0xFF84B2DF); // darker blue when pressed
-                            }
-                            return null;
-                          },
                         ),
                       ),
                       onPressed: signIn,
@@ -189,7 +184,7 @@ class _LoginPageState extends State<LoginPage>
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF0C1212),
+                          color: AppColors.secondary,
                         ),
                       ),
                     ),
@@ -203,7 +198,8 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildTextField(String hint, TextEditingController controller,
+  Widget _buildTextField(
+      String hint, TextEditingController controller,
       {bool obscure = false}) {
     return Focus(
       child: Builder(
@@ -213,10 +209,10 @@ class _LoginPageState extends State<LoginPage>
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(50),
               border: Border.all(
-                color: hasFocus ? Colors.blue : Colors.black,
+                color: hasFocus ? AppColors.button : AppColors.secondary,
                 width: hasFocus ? 2.5 : 2,
               ),
             ),
@@ -226,7 +222,7 @@ class _LoginPageState extends State<LoginPage>
               style: GoogleFonts.poppins(),
               decoration: InputDecoration(
                 hintText: hint,
-                hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                hintStyle: GoogleFonts.poppins(color: AppColors.abumuda),
                 contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 border: InputBorder.none,
