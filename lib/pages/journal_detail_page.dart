@@ -352,7 +352,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
               color: AppColors.abu,
               fontSize: 12,
               fontWeight: FontWeight.w500,
-            ), //stressssssssssss
+            ),
           ),
         ],
       ),
