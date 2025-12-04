@@ -210,13 +210,6 @@ class _AddJournalPageState extends State<AddJournalPage> {
         title: Text('Journal', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
         actions: [IconButton(icon: const Icon(Icons.check, color: Colors.black, size: 28), onPressed: _saveJournalEntry)],
       ),
-      bottomNavigationBar: Material(
-        color: Colors.transparent,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).padding.bottom + 10),
-          child: _buildEditingToolbar(),
-        ),
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(

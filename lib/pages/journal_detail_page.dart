@@ -9,9 +9,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:katahari/constant/app_colors.dart';
 import 'add_journal_page.dart' show Sticker;
 
-class JournalDetailPage extends StatelessWidget {
+class JournalDetailPage extends StatefulWidget {
   final String journalId;
   const JournalDetailPage({super.key, required this.journalId});
+
+  @override
+  State<JournalDetailPage> createState() => _JournalDetailPageState();
+}
+
+class _JournalDetailPageState extends State<JournalDetailPage> {
+  List<String> imageUrls = [];
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> _getJournalStream() {
     final user = FirebaseAuth.instance.currentUser;
@@ -22,7 +29,7 @@ class JournalDetailPage extends StatelessWidget {
         .collection('users')
         .doc(user.uid)
         .collection('journals')
-        .doc(journalId)
+        .doc(widget.journalId)
         .snapshots();
   }
 
@@ -31,12 +38,10 @@ class JournalDetailPage extends StatelessWidget {
     return DateFormat('E, d MMMM yyyy').format(timestamp.toDate());
   }
 
-  // --- FUNGSI BARU UNTUK MENGHAPUS SEMUA DATA JURNAL ---
   Future<void> _deleteJournal(BuildContext context, List<String> imageUrls) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    // Tampilkan dialog loading
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -44,16 +49,12 @@ class JournalDetailPage extends StatelessWidget {
     );
 
     try {
-      // 1. Hapus gambar dari Supabase Storage
       if (imageUrls.isNotEmpty) {
         final supabase = Supabase.instance.client;
-        // Ekstrak path file dari URL
+
         final filePaths = imageUrls.map((url) {
           final uri = Uri.parse(url);
-          // Path dimulai setelah nama bucket (contoh: /public/journal_images/....)
-          // Kita perlu menghapus bagian awal ini dari path
           final pathSegments = uri.pathSegments;
-          // Asumsi: pathSegments akan berisi ['storage', 'v1', 'object', 'public', 'journal_images', ...sisa path]
           if (pathSegments.length > 5) {
             return pathSegments.sublist(5).join('/');
           }
@@ -65,22 +66,20 @@ class JournalDetailPage extends StatelessWidget {
         }
       }
 
-      // 2. Hapus dokumen dari Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('journals')
-          .doc(journalId)
+          .doc(widget.journalId)
           .delete();
 
-      // 3. Kembali ke halaman utama setelah berhasil
       if (context.mounted) {
-        Navigator.of(context).pop(); // Tutup dialog loading
-        context.pop(); // Kembali dari halaman detail
+        Navigator.of(context).pop();
+        context.pop();
       }
     } catch (e) {
       if (context.mounted) {
-        Navigator.of(context).pop(); // Tutup dialog loading jika error
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Gagal menghapus jurnal: $e")),
         );
@@ -88,7 +87,6 @@ class JournalDetailPage extends StatelessWidget {
     }
   }
 
-  // --- FUNGSI BARU UNTUK DIALOG KONFIRMASI ---
   void _showDeleteConfirmationDialog(BuildContext context, List<String> imageUrls) {
     showDialog(
       context: context,
@@ -107,8 +105,8 @@ class JournalDetailPage extends StatelessWidget {
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Hapus'),
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Tutup dialog konfirmasi
-                _deleteJournal(context, imageUrls); // Mulai proses hapus
+                Navigator.of(dialogContext).pop();
+                _deleteJournal(context, imageUrls);
               },
             ),
           ],
@@ -126,177 +124,147 @@ class JournalDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primary,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.secondary),
-          onPressed: () => context.pop(),
-        ),
-        centerTitle: true,
-        title: Text(
-          'Journal',
-          style: GoogleFonts.poppins(
-              color: AppColors.secondary, fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_horiz, color: AppColors.secondary, size: 28),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/edit_journal/$journalId');
-        },
-        backgroundColor: AppColors.button,
-        shape: const CircleBorder(
-          side: BorderSide(color: AppColors.secondary, width: 2),
-        ),
-        child: const Icon(Icons.edit, color: AppColors.secondary),
-      ),
-      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: _getJournalStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
-            return Scaffold(
-              appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-              body: const Center(child: Text("Entri jurnal tidak ditemukan atau sudah dihapus.")),
-            );
-          }
-
-          final data = snapshot.data!.data()!;
-          final title = data['title'] ?? 'Tanpa Judul';
-          final description = data['description'] ?? '';
-          final timestamp = data['createdAt'] as Timestamp?;
-          final imageUrls = List<String>.from(data['imageUrls'] ?? []);
-          final stickersData = List<Map<String, dynamic>>.from(data['stickers'] ?? []);
-          final activeStickers = stickersData.map((d) => Sticker.fromJson(d)).toList();
-          final mood = data['mood'] ?? 'happy';
-          final paperColor = Color(data['paperColor'] as int? ?? Colors.white.value);
-
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => context.pop(),
-              ),
-              centerTitle: true,
-              title: Text(
-                'Journal',
-                style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22),
-              ),
-              actions: [
-                // --- PERUBAHAN ICON DAN FUNGSI HAPUS ---
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.black, size: 26),
-                  onPressed: () {
-                    _showDeleteConfirmationDialog(context, imageUrls);
-                  },
-                ),
-              ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                context.push('/edit_journal/$journalId');
-              },
-              backgroundColor: const Color(0xFFB0C4DE),
-              shape: const CircleBorder(
-                side: BorderSide(color: Colors.black, width: 2),
-              ),
-              child: const Icon(Icons.edit, color: Colors.black),
-            ),
-            body: Stack(
-              children: [
-                ListView(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 100),
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24.0),
-                      decoration: BoxDecoration(
-                        color: paperColor,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 50,
-                            offset: const Offset(0, 5),
-                          )
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildImageGrid(imageUrls),
-                          if (imageUrls.isNotEmpty) const SizedBox(height: 16),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  _formatTimestamp(timestamp),
-                                  style: GoogleFonts.poppins(color: AppColors.abumuda),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Image.asset(
-                                _moodAssets[mood] ?? _moodAssets['happy']!,
-                                width: 32,
-                                height: 32,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            title,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
-                              color: AppColors.secondary,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            description,
-                            style: GoogleFonts.poppins(height: 1.6),
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            children: [
-                              _buildTag(Icons.location_on_outlined, 'Roblox'),
-                              const SizedBox(width: 10),
-                              _buildTag(Icons.music_note_outlined, 'Winner Takes It All - ABBA'),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                ...activeStickers.map((sticker) {
-                  return Positioned(
-                    left: sticker.position.dx,
-                    top: sticker.position.dy,
-                    child: Image.asset(
-                      sticker.assetPath,
-                      width: sticker.size,
-                      height: sticker.size,
-                    ),
-                  );
-                }),
-              ],
-            ),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: _getJournalStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
-        },
-      ),
+        }
+
+        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+          return const Scaffold(
+            body: Center(child: Text("Entri jurnal tidak ditemukan atau sudah dihapus.")),
+          );
+        }
+
+        final data = snapshot.data!.data()!;
+        final title = data['title'] ?? 'Tanpa Judul';
+        final description = data['description'] ?? '';
+        final timestamp = data['createdAt'] as Timestamp?;
+        imageUrls = List<String>.from(data['imageUrls'] ?? []);
+        final stickersData = List<Map<String, dynamic>>.from(data['stickers'] ?? []);
+        final activeStickers = stickersData.map((d) => Sticker.fromJson(d)).toList();
+        final mood = data['mood'] ?? 'happy';
+        final paperColor = Color(data['paperColor'] as int? ?? Colors.white.value);
+
+        return Scaffold(
+          backgroundColor: AppColors.primary,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.secondary),
+              onPressed: () => context.pop(),
+            ),
+            centerTitle: true,
+            title: Text(
+              'Journal',
+              style: GoogleFonts.poppins(
+                  color: AppColors.secondary, fontWeight: FontWeight.bold, fontSize: 22),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.black, size: 26),
+                onPressed: () {
+                  _showDeleteConfirmationDialog(context, imageUrls);
+                },
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              context.push('/edit_journal/${widget.journalId}');
+            },
+            backgroundColor: AppColors.button,
+            shape: const CircleBorder(
+              side: BorderSide(color: AppColors.secondary, width: 2),
+            ),
+            child: const Icon(Icons.edit, color: AppColors.secondary),
+          ),
+          body: Stack(
+            children: [
+              ListView(
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 100),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24.0),
+                    decoration: BoxDecoration(
+                      color: paperColor,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 50,
+                          offset: const Offset(0, 5),
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildImageGrid(imageUrls),
+                        if (imageUrls.isNotEmpty) const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _formatTimestamp(timestamp),
+                                style: GoogleFonts.poppins(color: AppColors.abumuda),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Image.asset(
+                              _moodAssets[mood] ?? _moodAssets['happy']!,
+                              width: 32,
+                              height: 32,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          title,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28,
+                            color: AppColors.secondary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          description,
+                          style: GoogleFonts.poppins(height: 1.6),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            _buildTag(Icons.location_on_outlined, 'Roblox'),
+                            const SizedBox(width: 10),
+                            _buildTag(Icons.music_note_outlined, 'Winner Takes It All - ABBA'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              ...activeStickers.map((sticker) {
+                return Positioned(
+                  left: sticker.position.dx,
+                  top: sticker.position.dy,
+                  child: Image.asset(
+                    sticker.assetPath,
+                    width: sticker.size,
+                    height: sticker.size,
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -321,18 +289,35 @@ class JournalDetailPage extends StatelessWidget {
       case 1:
         return items[0];
       case 2:
-        return Row(children: [Expanded(child: items[0]), const SizedBox(width: 2), Expanded(child: items[1])]);
+        return Row(
+            children: [Expanded(child: items[0]), const SizedBox(width: 2), Expanded(child: items[1])]);
       case 3:
         return Row(children: [
           Expanded(flex: 2, child: items[0]),
           const SizedBox(width: 2),
-          Expanded(flex: 1, child: Column(children: [Expanded(child: items[1]), const SizedBox(height: 2), Expanded(child: items[2])])),
+          Expanded(
+              flex: 1,
+              child: Column(children: [
+                Expanded(child: items[1]),
+                const SizedBox(height: 2),
+                Expanded(child: items[2])
+              ]))
         ]);
       case 4:
         return Column(children: [
-          Expanded(child: Row(children: [Expanded(child: items[0]), const SizedBox(width: 2), Expanded(child: items[1])])),
+          Expanded(
+              child: Row(children: [
+                Expanded(child: items[0]),
+                const SizedBox(width: 2),
+                Expanded(child: items[1])
+              ])),
           const SizedBox(height: 2),
-          Expanded(child: Row(children: [Expanded(child: items[2]), const SizedBox(width: 2), Expanded(child: items[3])])),
+          Expanded(
+              child: Row(children: [
+                Expanded(child: items[2]),
+                const SizedBox(width: 2),
+                Expanded(child: items[3])
+              ])),
         ]);
       default:
         return items.isNotEmpty ? items[0] : const SizedBox.shrink();
@@ -344,9 +329,9 @@ class JournalDetailPage extends StatelessWidget {
       url,
       fit: BoxFit.cover,
       loadingBuilder: (context, child, progress) =>
-          progress == null ? child : const Center(child: CircularProgressIndicator()),
+      progress == null ? child : const Center(child: CircularProgressIndicator()),
       errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+      const Icon(Icons.broken_image, size: 50, color: Colors.grey),
     );
   }
 
@@ -356,8 +341,7 @@ class JournalDetailPage extends StatelessWidget {
       decoration: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary,)
-      ),
+          border: Border.all(color: AppColors.primary)),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.primary),
