@@ -240,9 +240,9 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
                         const SizedBox(height: 24),
                         Row(
                           children: [
-                            _buildTag(Icons.location_on_outlined, 'Roblox'),
+                            _buildTag(Icons.location_on_outlined, 'Location'),
                             const SizedBox(width: 10),
-                            _buildTag(Icons.music_note_outlined, 'Winner Takes It All - ABBA'),
+                            _buildTag(Icons.music_note_outlined, 'Song'),
                           ],
                         ),
                       ],

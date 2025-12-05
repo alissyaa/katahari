@@ -1,0 +1,108 @@
+  Widget _buildProfileContent({
+    required String name,
+    required String birthday,
+    required String mbti,
+    required Color cardColor,
+    required Color headerColor,
+    required String? imageUrl,
+  }) {
+    String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+    String capitalizedName = name.isNotEmpty ? '${name[0].toUpperCase()}${name.substring(1)}' : 'User';
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 28.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hello, $capitalizedName',
+                      style: GoogleFonts.poppins(fontSize: 34, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      formattedDate,
+                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+                InkWell(
+                  onTap: () {
+                    // Aksi untuk tombol settings, bisa Anda sesuaikan nanti
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: const Icon(
+                    Icons.settings_outlined,
+                    size: 30,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // --- PERUBAHAN DI SINI ---
+            // Membungkus kartu profil dengan GestureDetector agar bisa ditekan
+            GestureDetector(
+              onTap: () {
+                // Navigasi ke halaman edit dengan membawa data saat ini
+                context.push('/profile/edit', extra: {
+                  'name': name,
+                  'birthday': birthday,
+                  'mbti': mbti,
+                  'cardColor': cardColor,
+                  'headerColor': headerColor,
+                  'imageUrl': imageUrl,
+                });
+              },
+              child: _buildProfileCard(
+                name: name,
+                birthday: birthday,
+                mbti: mbti,
+                cardColor: cardColor,
+                headerColor: headerColor,
+                imageUrl: imageUrl,
+              ),
+            ),
+            // --- AKHIR PERUBAHAN ---
+
+            const SizedBox(height: 28),
+            _buildMoodTrackerTitle(name),
+            const SizedBox(height: 20),
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: _getJournalsStream(),
+              builder: (context, snapshot) {
+                int happyCount = 0, sadCount = 0, flatCount = 0, angryCount = 0;
+                if (snapshot.hasData) {
+                  for (var doc in snapshot.data!.docs) {
+                    final mood = doc.data()['mood'] as String?;
+                    switch (mood) {
+                      case 'happy': happyCount++; break;
+                      case 'sad': sadCount++; break;
+                      case 'flat': flatCount++; break;
+                      case 'angry': angryCount++; break;
+                    }
+                  }
+                }
+                return _buildAllMoodRows(
+                  happy: happyCount,
+                  flat: flatCount, // Menggunakan 'flat' sesuai data
+                  sad: sadCount,
+                  angry: angryCount,
+                );
+              },
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
