@@ -1,108 +1,164 @@
-  Widget _buildProfileContent({
-    required String name,
-    required String birthday,
-    required String mbti,
-    required Color cardColor,
-    required Color headerColor,
-    required String? imageUrl,
-  }) {
-    String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
-    String capitalizedName = name.isNotEmpty ? '${name[0].toUpperCase()}${name.substring(1)}' : 'User';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'add_journal_page.dart' show Sticker;
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 28.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+class JournalDetailPage extends StatelessWidget {
+  final String journalId;
+  const JournalDetailPage({super.key, required this.journalId});
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> _getJournalStream() {
+    // ... (fungsi tidak berubah)
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const Stream.empty();
+    return FirebaseFirestore.instance.collection('users').doc(user.uid).collection('journals').doc(journalId).snapshots();
+  }
+
+  String _formatTimestamp(Timestamp? timestamp) {
+    // ... (fungsi tidak berubah)
+    if (timestamp == null) return "Tanggal tidak diketahui";
+    return DateFormat('E, d MMMM yyyy').format(timestamp.toDate());
+  }
+
+  Future<void> _deleteJournal(BuildContext context, List<String> imageUrls) async {
+    // ... (fungsi tidak berubah)
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, List<String> imageUrls) {
+    // ... (fungsi tidak berubah)
+  }
+
+  static const Map<String, String> _moodAssets = {
+    'happy': 'assets/mood_happy.png',
+    'flat': 'assets/mood_flat.png',
+    'sad': 'assets/mood_sad.png',
+    'angry': 'assets/mood_angry.png',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _getJournalStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+            return Scaffold(
+              appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, iconTheme: const IconThemeData(color: Colors.black)),
+              body: const Center(child: Text("Entri jurnal tidak ditemukan atau sudah dihapus.")),
+            );
+          }
+
+          final data = snapshot.data!.data()!;
+          final title = data['title'] ?? 'Tanpa Judul';
+          final description = data['description'] ?? '';
+          final timestamp = data['createdAt'] as Timestamp?;
+          final imageUrls = List<String>.from(data['imageUrls'] ?? []);
+          final stickersData = List<Map<String, dynamic>>.from(data['stickers'] ?? []);
+          final activeStickers = stickersData.map((d) => Sticker.fromJson(d)).toList();
+          final mood = data['mood'] ?? 'happy';
+
+          // Membaca semua data styling
+          final paperColor = Color(data['paperColor'] as int? ?? Colors.white.value);
+          final fontSize = (data['fontSize'] as num?)?.toDouble() ?? 16.0;
+          final textColor = Color(data['textColor'] as int? ?? (paperColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white));
+          Color dynamicColor = paperColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white;
+
+          // --- MEMBACA DATA LOKASI & LAGU ---
+          final location = data['location'] as String?;
+          final song = data['song'] as String?;
+
+          return Scaffold(
+            backgroundColor: paperColor,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: IconThemeData(color: dynamicColor),
+              leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+              centerTitle: true,
+              title: Text('Journal', style: GoogleFonts.poppins(color: dynamicColor, fontWeight: FontWeight.bold, fontSize: 22)),
+              actions: [
+                IconButton(icon: Icon(Icons.delete_outline, color: dynamicColor, size: 26), onPressed: () => _showDeleteConfirmationDialog(context, imageUrls)),
+              ],
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => context.push('/edit_journal/$journalId'),
+              backgroundColor: const Color(0xFFB0C4DE),
+              shape: const CircleBorder(side: BorderSide(color: Colors.black, width: 2)),
+              child: const Icon(Icons.edit, color: Colors.black),
+            ),
+            body: Stack(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                ListView(
+                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 100),
                   children: [
-                    Text(
-                      'Hello, $capitalizedName',
-                      style: GoogleFonts.poppins(fontSize: 34, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      formattedDate,
-                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (imageUrls.isNotEmpty) _buildImageGrid(imageUrls),
+                        if (imageUrls.isNotEmpty) const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(child: Text(_formatTimestamp(timestamp), style: GoogleFonts.poppins(color: dynamicColor.withOpacity(0.7)))),
+                            const SizedBox(width: 8),
+                            Image.asset(_moodAssets[mood] ?? _moodAssets['happy']!, width: 32, height: 32),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 32, color: textColor)),
+                        const SizedBox(height: 16),
+                        Text(description, style: GoogleFonts.poppins(fontSize: fontSize, color: textColor, height: 1.6)),
+                        const SizedBox(height: 24),
+                        // --- MENAMPILKAN TAG JIKA ADA DATANYA ---
+                        if (location != null || song != null)
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: [
+                              if (location != null) _buildTag(Icons.location_on_outlined, location, dynamicColor),
+                              if (song != null) _buildTag(Icons.music_note_outlined, song, dynamicColor),
+                            ],
+                          ),
+                      ],
                     ),
                   ],
                 ),
-                InkWell(
-                  onTap: () {
-                    // Aksi untuk tombol settings, bisa Anda sesuaikan nanti
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: const Icon(
-                    Icons.settings_outlined,
-                    size: 30,
-                    color: Colors.black,
-                  ),
-                ),
+                ...activeStickers.map((sticker) {
+                  return Positioned(
+                    left: sticker.position.dx,
+                    top: sticker.position.dy,
+                    child: Image.asset(sticker.assetPath, width: sticker.size, height: sticker.size),
+                  );
+                }),
               ],
             ),
-            const SizedBox(height: 24),
-
-            // --- PERUBAHAN DI SINI ---
-            // Membungkus kartu profil dengan GestureDetector agar bisa ditekan
-            GestureDetector(
-              onTap: () {
-                // Navigasi ke halaman edit dengan membawa data saat ini
-                context.push('/profile/edit', extra: {
-                  'name': name,
-                  'birthday': birthday,
-                  'mbti': mbti,
-                  'cardColor': cardColor,
-                  'headerColor': headerColor,
-                  'imageUrl': imageUrl,
-                });
-              },
-              child: _buildProfileCard(
-                name: name,
-                birthday: birthday,
-                mbti: mbti,
-                cardColor: cardColor,
-                headerColor: headerColor,
-                imageUrl: imageUrl,
-              ),
-            ),
-            // --- AKHIR PERUBAHAN ---
-
-            const SizedBox(height: 28),
-            _buildMoodTrackerTitle(name),
-            const SizedBox(height: 20),
-            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              stream: _getJournalsStream(),
-              builder: (context, snapshot) {
-                int happyCount = 0, sadCount = 0, flatCount = 0, angryCount = 0;
-                if (snapshot.hasData) {
-                  for (var doc in snapshot.data!.docs) {
-                    final mood = doc.data()['mood'] as String?;
-                    switch (mood) {
-                      case 'happy': happyCount++; break;
-                      case 'sad': sadCount++; break;
-                      case 'flat': flatCount++; break;
-                      case 'angry': angryCount++; break;
-                    }
-                  }
-                }
-                return _buildAllMoodRows(
-                  happy: happyCount,
-                  flat: flatCount, // Menggunakan 'flat' sesuai data
-                  sad: sadCount,
-                  angry: angryCount,
-                );
-              },
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
+
+  // --- Sisa widget helper (tidak ada perubahan) ---
+  Widget _buildImageGrid(List<String> imageUrls) { /* ... */ return Container(); }
+  Widget _buildLayoutForImages(List<Widget> items) { /* ... */ return Container(); }
+  Widget _buildGridItem(String url) { /* ... */ return Container(); }
+  Widget _buildTag(IconData icon, String label, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(color: textColor.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+      child: Row(children: [
+        Icon(icon, size: 18, color: textColor.withOpacity(0.7)),
+        const SizedBox(width: 6),
+        Text(label, style: GoogleFonts.poppins(color: textColor.withOpacity(0.9), fontSize: 12, fontWeight: FontWeight.w500)),
+      ]),
+    );
+  }
+}

@@ -39,24 +39,16 @@ class _ProfilePageState extends State<ProfilePage> {
     required Color cardColor,
     required Color headerColor,
     required String? imageUrl,
-  }) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(
-          currentName: name,
-          currentBirthday: birthday,
-          currentMbti: mbti,
-          currentCardColor: cardColor,
-          currentHeaderColor: headerColor,
-          currentImageUrl: imageUrl,
-        ),
-      ),
-    );
-
-    if (result == true) {
-      setState(() {});
-    }
+  }) {
+    // MENGGUNAKAN GoRouter untuk navigasi yang konsisten
+    context.push('/profile/edit', extra: {
+      'name': name,
+      'birthday': birthday,
+      'mbti': mbti,
+      'cardColor': cardColor,
+      'headerColor': headerColor,
+      'imageUrl': imageUrl,
+    });
   }
 
   @override

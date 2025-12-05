@@ -52,10 +52,12 @@ class _AddJournalPageState extends State<AddJournalPage> {
   Color _textColor = Colors.black87;
   String _selectedMood = 'happy';
   Color _paperColor = Colors.white; // Hanya state warna kertas yang tersisa
+  String _location = 'Location Here';
+  String _song = 'Song Here';
+
 
   final List<Color> _paperColors = [
     Colors.white,
-    const Color(0xFF212121),
     const Color(0xFFFBC4C4),
     const Color(0xFFD6F8C5),
     const Color(0xFFFFF4BD),
@@ -136,21 +138,37 @@ class _AddJournalPageState extends State<AddJournalPage> {
   }
 
   Future<List<String>> _uploadImages(String userId, String journalId) async {
-    final supabase = Supabase.instance.client;
+    // 1. Fungsi ini sekarang mengembalikan List<String>, bukan String?
     if (_selectedImages.isEmpty) return [];
+
+    final supabase = Supabase.instance.client;
     List<String> newImageUrls = [];
+
+    // 2. Melakukan perulangan untuk setiap gambar yang dipilih
     for (var imageFile in _selectedImages) {
-      final file = File(imageFile.path);
-      final fileName = '\${DateTime.now().millisecondsSinceEpoch}_\${path.basename(imageFile.path)}';
-      final filePath = '\$userId/\$journalId/\$fileName';
       try {
-        await supabase.storage.from('journal_images').upload(filePath, file, fileOptions: const FileOptions(cacheControl: '3600', upsert: false));
-        final url = supabase.storage.from('journal_images').getPublicUrl(filePath);
-        newImageUrls.add(url);
-      } on StorageException catch (e) {
-        if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal unggah: \${e.message}")));
+        final file = File(imageFile.path);
+        final bytes = await file.readAsBytes();
+        final fileExtension = path.extension(imageFile.path).toLowerCase();
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
+        final filePath = 'journals/$userId/$journalId/$fileName';
+
+        final String contentType = fileExtension == '.png' ? 'image/png' : 'image/jpeg';
+
+        await supabase.storage.from('journal_images').uploadBinary(
+          filePath,
+          bytes,
+          fileOptions: FileOptions(cacheControl: '3600', upsert: true, contentType: contentType),
+        );
+
+        final publicUrl = supabase.storage.from('journal_images').getPublicUrl(filePath);
+        newImageUrls.add("$publicUrl?t=${DateTime.now().millisecondsSinceEpoch}");
       } catch (e) {
-        if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Terjadi error: \$e")));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Gagal unggah foto jurnal: $e")),
+          );
+        }
       }
     }
     return newImageUrls;
@@ -179,6 +197,8 @@ class _AddJournalPageState extends State<AddJournalPage> {
         'paperColor': _paperColor.value,
         'fontSize': _fontSize,
         'textColor': _textColor.value,
+        'location': _location == 'Location Here' ? null : _location, // Simpan lokasi
+        'song': _song == 'Song Here' ? null : _song, // Simpan lagu
       };
       if (_isEditMode) {
         await docRef.update(data);
@@ -197,14 +217,58 @@ class _AddJournalPageState extends State<AddJournalPage> {
     }
   }
 
+  Future<void> _showTagInputDialog(String type) async {
+    final TextEditingController controller = TextEditingController(
+      text: type == 'location'
+          ? (_location == 'Location Here' ? '' : _location)
+          : (_song == 'Song Here' ? '' : _song),
+    );
+
+    final String? result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Enter $type'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: GoogleFonts.poppins(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, controller.text);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        if (type == 'location') {
+          _location = result.isEmpty ? 'Location Here' : result;
+        } else {
+          _song = result.isEmpty ? 'Song Here' : result;
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat('E, d MMMM yyyy').format(DateTime.now());
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: _paperColor,
       appBar: AppBar(
+        // AppBar dibuat transparan agar menyatu dengan kertas
         backgroundColor: Colors.transparent,
         elevation: 0,
+        // Atur warna ikon AppBar agar kontras
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => context.pop()),
         centerTitle: true,
         title: Text('Journal', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
@@ -221,15 +285,6 @@ class _AddJournalPageState extends State<AddJournalPage> {
                 SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   child: Container(
-                    height: 800,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: _paperColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))
-                      ],
-                    ),
                     child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,23 +304,52 @@ class _AddJournalPageState extends State<AddJournalPage> {
                         if (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) const SizedBox(height: 16),
                         TextField(
                           controller: _titleController,
-                          style: GoogleFonts.poppins(fontSize: 32, fontWeight: FontWeight.bold, color: _paperColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white),
+                          style: GoogleFonts.poppins(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: _textColor,
+                          ),
                           maxLines: null,
-                          decoration: const InputDecoration.collapsed(hintText: 'Title'),
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Title',
+                            hintStyle: GoogleFonts.poppins(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _descriptionController,
-                          style: GoogleFonts.poppins(fontSize: 16, height: 1.6, color: _paperColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white),
+                          style: GoogleFonts.poppins(
+                            fontSize: _fontSize,
+                            height: 1.6,
+                            color: _textColor,
+                          ),
                           maxLines: null,
-                          decoration: const InputDecoration.collapsed(hintText: 'Start writing your story...'),
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Start writing your story...',
+                            hintStyle: GoogleFonts.poppins(
+                              fontSize: _fontSize,
+                              height: 1.6,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Row(
                           children: [
-                            _buildTag(Icons.location_on_outlined, 'Location Here'),
+                            // --- MEMBUAT TAG BISA DITEKAN ---
+                            GestureDetector(
+                              onTap: () => _showTagInputDialog('location'),
+                              child: _buildTag(Icons.location_on_outlined, _location),
+                            ),
                             const SizedBox(width: 10),
-                            _buildTag(Icons.music_note_outlined, 'Song Here'),
+                            GestureDetector(
+                              onTap: () => _showTagInputDialog('song'),
+                              child: _buildTag(Icons.music_note_outlined, _song),
+                            ),
                           ],
                         ),
                       ],
@@ -273,16 +357,6 @@ class _AddJournalPageState extends State<AddJournalPage> {
                   ),
                   ),
                 ),
-                ..._activeStickers.map((sticker) {
-                  return Positioned(
-                    left: sticker.position.dx,
-                    top: sticker.position.dy,
-                    child: GestureDetector(
-                      onPanUpdate: (details) => setState(() => sticker.position += details.delta),
-                      child: Image.asset(sticker.assetPath, width: sticker.size, height: sticker.size),
-                    ),
-                  );
-                }),
               ],
             ),
           ),

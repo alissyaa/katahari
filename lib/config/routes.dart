@@ -113,6 +113,7 @@ GoRouter createRouter() {
             currentMbti: extra?['mbti'] ?? '',
             currentCardColor: extra?['cardColor'] ?? 0xFFFFFFFF,
             currentHeaderColor: extra?['headerColor'] ?? 0xFF000000,
+            currentImageUrl: extra?['imageUrl'],
           );
         },
       ),
