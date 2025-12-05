@@ -124,7 +124,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       // Ambil public URL langsung (String)
       final publicUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
-      return publicUrl;
+
+// Tambahkan ini
+      final freshUrl = "$publicUrl?v=${DateTime.now().millisecondsSinceEpoch}";
+
+// Return URL baru
+      return freshUrl;
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal unggah foto: $e")),

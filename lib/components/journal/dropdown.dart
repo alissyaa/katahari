@@ -39,7 +39,7 @@ class _MoodDropdownState extends State<MoodDropdown> {
     {"label": "All", "color": AppColors.primary},
     {"label": "Happy", "color": AppColors.screen1},
     {"label": "Sad", "color": AppColors.button},
-    {"label": "Flat", "color": AppColors.screen1},
+    {"label": "Flat", "color": AppColors.screen2},
     {"label": "Angry", "color": AppColors.merah},
   ];
 

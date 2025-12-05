@@ -148,6 +148,10 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
         final activeStickers = stickersData.map((d) => Sticker.fromJson(d)).toList();
         final mood = data['mood'] ?? 'happy';
         final paperColor = Color(data['paperColor'] as int? ?? Colors.white.value);
+        final fontSize = (data['fontSize'] as num?)?.toDouble() ?? 16.0;
+        final textColor = Color(data['textColor'] as int? ?? Colors.black87.value);
+        final location = data['location'] as String?;
+        final song = data['song'] as String?;
 
         return Scaffold(
           backgroundColor: AppColors.primary,
@@ -228,23 +232,27 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
                           title,
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
-                            fontSize: 28,
-                            color: AppColors.secondary,
+                            fontSize: 32,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           description,
-                          style: GoogleFonts.poppins(height: 1.6),
+                          style: GoogleFonts.poppins(
+                              fontSize: fontSize,
+                              color: textColor,
+                          ),
                         ),
                         const SizedBox(height: 24),
-                        Row(
-                          children: [
-                            _buildTag(Icons.location_on_outlined, 'Location'),
-                            const SizedBox(width: 10),
-                            _buildTag(Icons.music_note_outlined, 'Song'),
-                          ],
-                        ),
+                        if (location != null || song != null)
+                          Row(
+                            children: [
+                              if (location != null) _buildTag(Icons.location_on_outlined, location),
+                              const SizedBox(width: 10),
+                              if (song != null) _buildTag(Icons.music_note_outlined, song),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -344,7 +352,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
           border: Border.all(color: AppColors.primary)),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.primary),
+          Icon(icon, size: 18, color: AppColors.secondary),
           const SizedBox(width: 6),
           Text(
             label,
