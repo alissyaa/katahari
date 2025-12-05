@@ -90,7 +90,7 @@ class _FirstPageState extends State<FirstPage>
                       overlayColor: WidgetStateProperty.resolveWith<Color?>(
                             (Set<WidgetState> states) {
                           if (states.contains(WidgetState.pressed)) {
-                            return const Color(0xFF84B2DF); // darker blue when pressed
+                            return AppColors.button;
                           }
                           return null;
                         },
@@ -101,7 +101,7 @@ class _FirstPageState extends State<FirstPage>
                       'Sign Up',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: const Color(0xFF0C1212),
+                        color: AppColors.secondary,
                       ),
                     ),
                   ),
@@ -110,7 +110,7 @@ class _FirstPageState extends State<FirstPage>
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(color: Color(0xFF0C1212)),
+                      side: const BorderSide(color: AppColors.secondary),
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
@@ -119,7 +119,7 @@ class _FirstPageState extends State<FirstPage>
                       overlayColor: WidgetStateProperty.resolveWith<Color?>(
                             (Set<WidgetState> states) {
                           if (states.contains(WidgetState.pressed)) {
-                            return AppColors.button; // turns blue when pressed
+                            return AppColors.button;
                           }
                           return null;
                         },
@@ -130,7 +130,7 @@ class _FirstPageState extends State<FirstPage>
                       'Log In',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: const Color(0xFF0C1212),
+                        color: AppColors.secondary,
                       ),
                     ),
                   ),

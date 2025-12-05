@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:katahari/components/journal/how_was_your_day_card.dart';
 import 'package:katahari/components/journal/journal_grid.dart';
 import 'package:katahari/constant/app_colors.dart';
-import '../components/journal/dropdown.dart';
+import 'package:katahari/components/journal/dropdown.dart';
+import 'package:katahari/components/all/header_widget.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -48,7 +49,7 @@ class _JournalPageState extends State<JournalPage> {
           decoration: BoxDecoration(
             color: AppColors.button,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.secondary, width: 3),
+            border: Border.all(color: AppColors.secondary, width: 2),
           ),
           child: IconButton(
             icon: const Icon(Icons.add, size: 40, color: AppColors.secondary),
@@ -64,21 +65,9 @@ class _JournalPageState extends State<JournalPage> {
           padding: const EdgeInsets.symmetric(horizontal: 30),
           children: [
             const SizedBox(height: 20),
-            Text(
-              'Hello, ${displayName[0].toUpperCase()}${displayName.substring(1)}',
-              style: GoogleFonts.poppins(
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              formattedDate,
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: AppColors.abumuda,
-                fontWeight: FontWeight.w600,
-              ),
+            HeaderWidget(
+              userName: displayName,
+              date: formattedDate,
             ),
             const SizedBox(height: 30),
             const HowWasYourDayCard(),
@@ -87,7 +76,6 @@ class _JournalPageState extends State<JournalPage> {
             const SizedBox(height: 20),
             _buildSearchBar(),
             const SizedBox(height: 20),
-            // --- Mengirim state filter ke JournalGrid ---
             JournalGrid(
               searchQuery: _searchQuery,
               moodFilter: _selectedMoodFilter,
@@ -113,8 +101,6 @@ class _JournalPageState extends State<JournalPage> {
         MoodDropdown(
           onSelected: (value) {
             setState(() {
-              // --- PERBAIKAN DI SINI ---
-              // Jika memilih 'Filter' atau 'All', hapus filternya (set ke null)
               _selectedMoodFilter = (value == 'Filter' || value == 'All') ? null : value.toLowerCase();
             });
           },
@@ -147,7 +133,7 @@ class _JournalPageState extends State<JournalPage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: AppColors.secondary, width: 2.5),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
       ),
     );

@@ -3,7 +3,7 @@ import 'package:katahari/constant/app_colors.dart';
 
 class MoodDropdown extends StatefulWidget {
   final Function(String) onSelected;
-  final String? selectedValue; // <-- Parameter untuk menerima nilai terpilih
+  final String? selectedValue;
   const MoodDropdown({super.key, required this.onSelected, this.selectedValue});
 
   @override
@@ -23,8 +23,6 @@ class _MoodDropdownState extends State<MoodDropdown> {
     selected = widget.selectedValue ?? "All";
   }
 
-  // --- PERBAIKAN DI SINI ---
-  // Memastikan widget diperbarui saat ada perubahan dari luar
   @override
   void didUpdateWidget(MoodDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -132,7 +130,7 @@ class _MoodDropdownState extends State<MoodDropdown> {
           decoration: BoxDecoration(
             color: mainColor,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.black, width: 2),
+            border: Border.all(color: AppColors.secondary, width: 2),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -141,14 +139,14 @@ class _MoodDropdownState extends State<MoodDropdown> {
                 selected,
                 style: const TextStyle(
                   fontSize: 17,
-                  color: Colors.black,
+                  color: AppColors.secondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(width: 6),
               Icon(
                 isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                color: Colors.black,
+                color: AppColors.secondary,
               )
             ],
           ),

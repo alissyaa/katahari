@@ -43,7 +43,6 @@ class CustomDateTimePicker extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // TIME FIELD
         Expanded(
           child: GestureDetector(
             onTap: onPickTime,

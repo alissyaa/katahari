@@ -31,8 +31,9 @@ class EmptyStateWidget extends StatelessWidget {
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(height: 50),
           SizedBox(
             width: 160,
             height: 160,

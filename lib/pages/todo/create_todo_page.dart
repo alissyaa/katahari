@@ -24,12 +24,12 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   bool isCreating = false;
 
   final List<Map<String, dynamic>> labelOptions = [
-    {'label': 'Work', 'icon': Icons.work_outline, 'color': AppColors.button},
-    {'label': 'Personal', 'icon': Icons.person_outline, 'color': Color(0xFFC3A3FF)},
+    {'label': 'Work', 'icon': Icons.work_outline, 'color': AppColors.secondary},
+    {'label': 'Personal', 'icon': Icons.person_outline, 'color': AppColors.purple},
     {'label': 'Shopping', 'icon': Icons.shopping_cart_outlined, 'color': AppColors.merah},
     {'label': 'Study', 'icon': Icons.school_outlined, 'color': AppColors.screen2},
     {'label': 'Health', 'icon': Icons.favorite_border, 'color': AppColors.screen1},
-    {'label': 'Family', 'icon': Icons.home_outlined, 'color': AppColors.kream},
+    {'label': 'Family', 'icon': Icons.home_outlined, 'color': AppColors.button},
   ];
 
   @override
@@ -75,8 +75,8 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
             'Task',
             style: GoogleFonts.poppins(
               color: AppColors.secondary,
-              fontSize: 30,
-              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: true,

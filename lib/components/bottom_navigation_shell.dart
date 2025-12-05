@@ -45,10 +45,8 @@ class BottomNavigationShell extends StatelessWidget {
 
         body: Stack(
           children: [
-            /// ---- PAGE CONTENT ----
             navigationShell,
 
-            /// ---- FLOATING NAV BAR ----
             Positioned(
               left: screenWidth * 0.04,
               right: screenWidth * 0.04,
@@ -59,7 +57,7 @@ class BottomNavigationShell extends StatelessWidget {
                   vertical: screenHeight * 0.015,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFAED0F5),
+                  color: AppColors.button,
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(

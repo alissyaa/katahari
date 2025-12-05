@@ -7,7 +7,7 @@ import 'package:katahari/components/todo/empty_state.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:katahari/components/all/header_widget.dart';
 import '../../config/routes.dart';
 
 class TodoPage extends StatefulWidget {
@@ -60,7 +60,10 @@ class _TodoPageState extends State<TodoPage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           children: [
-            _buildHeader(loggedInUser, formattedDate),
+            HeaderWidget(
+              userName: loggedInUser,
+              date: formattedDate,
+            ),
             const SizedBox(height: 30),
             const HowWasYourDayCard(),
             const SizedBox(height: 30),
@@ -97,32 +100,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ================= HEADER =================
-  Widget _buildHeader(String userName, String date) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hello, $userName',
-          style: const TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins',
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          date,
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.abu,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
-    );
-  }
-
   // ================= TASK HEADER + ADD BUTTON =================
   Widget _buildTaskHeader() {
     return Row(
@@ -131,7 +108,7 @@ class _TodoPageState extends State<TodoPage> {
         const Text(
           'Task',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins',
           ),
@@ -392,7 +369,7 @@ class _TodoPageState extends State<TodoPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
             side: const BorderSide(
-              color: Colors.black,
+              color: AppColors.secondary,
               width: 2.2,
             ),
           ),
@@ -408,16 +385,16 @@ class _TodoPageState extends State<TodoPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(40),
-                        border: Border.all(color: Colors.black, width: 2),
+                        border: Border.all(color: AppColors.secondary, width: 2),
                       ),
                       child: Text(
-                        todo.status,
-                        textAlign: TextAlign.center,   // <-- CENTER
+                        todo.label,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 13,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -425,18 +402,18 @@ class _TodoPageState extends State<TodoPage> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(40),
-                        border: Border.all(color: Colors.black, width: 2),
+                        border: Border.all(color: AppColors.secondary, width: 2),
                       ),
                       child: Text(
                         todo.deadlineDate != null
                             ? DateFormat('dd MMM yyyy HH:mm').format(todo.deadlineDate!)
                             : 'No deadline',
-                        textAlign: TextAlign.center,  // <-- CENTER
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 13,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -471,7 +448,7 @@ class _TodoPageState extends State<TodoPage> {
                   padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
                   decoration: const BoxDecoration(
                     border: Border(
-                      top: BorderSide(color: Colors.black, width: 2),
+                      top: BorderSide(color: AppColors.secondary, width: 2),
                     ),
                   ),
                   child: Text(
@@ -481,7 +458,7 @@ class _TodoPageState extends State<TodoPage> {
                     textAlign: TextAlign.center,    // <-- CENTER
                     style: const TextStyle(
                       fontFamily: 'Poppins',
-                      color: Colors.black87,
+                      color: AppColors.abu,
                       fontSize: 15,
                       height: 1.4,
                     ),
@@ -500,11 +477,11 @@ class _TodoPageState extends State<TodoPage> {
                       height: 42,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFADD8FF),
+                          backgroundColor: AppColors.button,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
-                            side: const BorderSide(color: Colors.black, width: 2),
+                            side: const BorderSide(color: AppColors.secondary, width: 2),
                           ),
                         ),
                         onPressed: () {
@@ -515,7 +492,7 @@ class _TodoPageState extends State<TodoPage> {
                           "Edit",
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: Colors.black,
+                            color: AppColors.secondary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -529,11 +506,11 @@ class _TodoPageState extends State<TodoPage> {
                       height: 42,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFA4A4),
+                          backgroundColor: AppColors.merah,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(22),
-                            side: const BorderSide(color: Colors.black, width: 2),
+                            side: const BorderSide(color: AppColors.secondary, width: 2),
                           ),
                         ),
                         onPressed: () async {
@@ -544,7 +521,7 @@ class _TodoPageState extends State<TodoPage> {
                           "Delete",
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: Colors.black,
+                            color: AppColors.secondary,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
