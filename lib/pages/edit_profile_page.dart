@@ -1,6 +1,15 @@
+import 'dart:io'; // Diperlukan untuk File
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Diperlukan untuk User ID
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart'; // Diperlukan untuk memilih gambar
 import 'package:katahari/constant/app_colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Diperlukan untuk Supabase
+import 'package:path/path.dart' as path;
+
+import '../config/routes.dart'; // Diperlukan untuk nama file
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -8,6 +17,7 @@ class EditProfilePage extends StatefulWidget {
   final String currentMbti;
   final Color currentCardColor;
   final Color currentHeaderColor;
+  final String? currentImageUrl; // <-- Tambahkan ini
 
   const EditProfilePage({
     super.key,
@@ -16,6 +26,7 @@ class EditProfilePage extends StatefulWidget {
     required this.currentMbti,
     required this.currentCardColor,
     required this.currentHeaderColor,
+    this.currentImageUrl, // <-- Tambahkan ini
   });
 
   @override
@@ -29,6 +40,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   late Color _selectedBodyColor;
   late Color _selectedHeaderColor;
+
+  // --- STATE BARU UNTUK GAMBAR ---
+  final ImagePicker _picker = ImagePicker();
+  XFile? _selectedImageFile;
+  String? _existingImageUrl;
 
   final List<Color> headerColorOptions = [
     AppColors.primary,
@@ -55,6 +71,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         text: widget.currentMbti == "-" ? "" : widget.currentMbti);
     _selectedBodyColor = widget.currentCardColor;
     _selectedHeaderColor = widget.currentHeaderColor;
+    _existingImageUrl = widget.currentImageUrl; // <-- Inisialisasi URL gambar
   }
 
   @override
@@ -65,17 +82,102 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  void _saveChanges() {
-    final updatedData = {
-      'name': _nameController.text.isEmpty ? "-" : _nameController.text,
-      'birthday':
-      _birthdayController.text.isEmpty ? "-" : _birthdayController.text,
-      'mbti': _mbtiController.text.isEmpty ? "-" : _mbtiController.text,
-      'cardColor': _selectedBodyColor,
-      'headerColor': _selectedHeaderColor,
-    };
-    Navigator.pop(context, updatedData);
+  // --- FUNGSI BARU UNTUK MEMILIH GAMBAR ---
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImageFile = image;
+      });
+    }
   }
+
+  Future<String?> _uploadProfilePicture() async {
+    if (_selectedImageFile == null) return null;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in.")),
+      );
+      return null;
+    }
+
+    try {
+      final file = File(_selectedImageFile!.path);
+      final bytes = await file.readAsBytes();
+      final fileExtension = path.extension(_selectedImageFile!.path).toLowerCase();
+      final filePath = '${user.uid}/profile$fileExtension'; // path di dalam bucket
+
+      final supabase = Supabase.instance.client;
+
+      // Upload file ke bucket public 'avatars'
+      await supabase.storage.from('avatars').uploadBinary(
+        filePath,
+        bytes,
+        fileOptions: FileOptions(
+          cacheControl: '3600',
+          upsert: true,
+          contentType: fileExtension == '.png' ? 'image/png' : 'image/jpeg',
+        ),
+      );
+
+      // Ambil public URL langsung (String)
+      final publicUrl = supabase.storage.from('avatars').getPublicUrl(filePath);
+      return publicUrl;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal unggah foto: $e")),
+      );
+      return null;
+    }
+  }
+
+
+  void _saveChanges() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Tampilkan loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      String? newImageUrl = await _uploadProfilePicture();
+
+      final updatedData = {
+        'name': _nameController.text.isEmpty ? "-" : _nameController.text,
+        'birthday': _birthdayController.text.isEmpty ? "-" : _birthdayController.text,
+        'mbti': _mbtiController.text.isEmpty ? "-" : _mbtiController.text,
+        'cardColor': _selectedBodyColor.value,
+        'headerColor': _selectedHeaderColor.value,
+        'imageUrl': newImageUrl ?? _existingImageUrl,
+      };
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({'profile': updatedData}, SetOptions(merge: true));
+
+      if (!mounted) return;
+
+      // --- PERBAIKAN UTAMA DI SINI ---
+      // 1. Tutup dialog loading dulu
+      Navigator.of(context).pop();
+      // 2. Tutup halaman edit, maka akan otomatis kembali ke halaman profil
+      GoRouter.of(context).go(AppRoutes.profile);
+
+    } catch (e) {
+      if (mounted) Navigator.of(context).pop(); // Tutup loading jika error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal menyimpan profil: $e")),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -187,40 +289,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
+                // --- PERUBAHAN UI GAMBAR PROFIL ---
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                    Border.all(color: AppColors.secondary, width: 1.5),
+                    child: Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        border:
+                        Border.all(color: AppColors.secondary, width: 1.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _buildProfileImage(),
+                    ),
                   ),
-                  child: Icon(Icons.add_a_photo,
-                      size: 32, color: AppColors.secondary),
                 ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        "Name\n${_nameController.text.isEmpty
-                            ? '-'
-                            : _nameController.text}",
+                        "Name\n${_nameController.text.isEmpty ? '-' : _nameController.text}",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                     const SizedBox(height: 4),
                     Text(
-                        "Birthday\n${_birthdayController.text.isEmpty
-                            ? '-'
-                            : _birthdayController.text}",
+                        "Birthday\n${_birthdayController.text.isEmpty ? '-' : _birthdayController.text}",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                     const SizedBox(height: 4),
                     Text(
-                        "MBTI\n${_mbtiController.text.isEmpty
-                            ? '-'
-                            : _mbtiController.text}",
+                        "MBTI\n${_mbtiController.text.isEmpty ? '-' : _mbtiController.text}",
                         style: GoogleFonts.poppins(
                             height: 1.5, color: AppColors.secondary)),
                   ],
@@ -232,6 +334,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+
+  // --- WIDGET BARU UNTUK MENAMPILKAN GAMBAR ---
+  // --- WIDGET BARU UNTUK MENAMPILKAN GAMBAR ---
+  Widget _buildProfileImage() {
+    // 1. Jika ada gambar BARU yang dipilih, tampilkan itu.
+    if (_selectedImageFile != null) {
+      return Image.file(
+        File(_selectedImageFile!.path),
+        // --- PERBAIKAN DI SINI: MEMAKSA WIDGET UNTUK UPDATE ---
+        key: UniqueKey(),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+    // 2. Jika tidak ada gambar baru, tapi ada URL gambar LAMA, tampilkan itu.
+    if (_existingImageUrl != null && _existingImageUrl!.isNotEmpty) {
+      return Image.network(
+        _existingImageUrl!,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        loadingBuilder: (context, child, progress) =>
+        progress == null ? child : const Center(child: CircularProgressIndicator()),
+        errorBuilder: (context, error, stack) =>
+            Icon(Icons.add_a_photo, size: 32, color: AppColors.secondary),
+      );
+    }
+    // 3. Jika tidak ada keduanya, tampilkan ikon tambah.
+    return Icon(Icons.add_a_photo, size: 32, color: AppColors.secondary);
+  }
+
 
   Widget _buildColorSelector() {
     return Column(
@@ -264,7 +398,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   border: Border.all(color: AppColors.secondary, width: 1.5),
                 ),
                 child: isSelected
-                    ? Icon(Icons.check, color: AppColors.button, size: 20)
+                    ? Icon(Icons.check, color: AppColors.kream, size: 20)
                     : null,
               ),
             );
@@ -274,9 +408,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget _buildTextField({required String label,
-    required TextEditingController controller,
-    required String hint}) {
+  Widget _buildTextField(
+      {required String label,
+        required TextEditingController controller,
+        required String hint}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(

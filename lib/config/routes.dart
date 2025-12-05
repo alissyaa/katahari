@@ -11,7 +11,10 @@ import 'package:katahari/pages/splashscreen.dart';
 import 'package:katahari/pages/todo/create_todo_page.dart';
 import 'package:katahari/pages/todo/todo_page.dart';
 import '../components/bottom_navigation_shell.dart';
+import '../pages/edit_profile_page.dart';
+import '../pages/journal_mood_page.dart';
 import '../pages/profile_page.dart';
+import '../pages/settings/settings_page.dart';
 import '../pages/todo/edit_todo_page.dart';
 import 'package:katahari/models/todo_model.dart';
 
@@ -31,6 +34,7 @@ class AppRoutes {
   static const String editJournal = '/edit_journal';
   static const String addTodos = '/addTodos';
   static const editTodo = '/edit_todo';
+  static const settings = '/settings/settings_page';
 }
 
 GoRouter createRouter() {
@@ -87,6 +91,33 @@ GoRouter createRouter() {
           return EditTodoPage(todo: todo);
         },
       ),
+      GoRoute(
+        path: '/profile/mood_journal_list/:mood',
+        builder: (context, state) {
+          final mood = state.pathParameters['mood']!;
+          return JournalMoodPage(mood: mood);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.settings,
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+
+          return EditProfilePage(
+            currentName: extra?['name'] ?? '',
+            currentBirthday: extra?['birthday'] ?? '',
+            currentMbti: extra?['mbti'] ?? '',
+            currentCardColor: extra?['cardColor'] ?? 0xFFFFFFFF,
+            currentHeaderColor: extra?['headerColor'] ?? 0xFF000000,
+          );
+        },
+      ),
+
+
 
 
       // Rute-rute ini akan memiliki Navbar

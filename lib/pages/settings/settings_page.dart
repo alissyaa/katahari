@@ -88,7 +88,10 @@ class SettingsPage extends StatelessWidget {
           color: AppColors.secondary,
           size: 24,
         ),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          // Kembali ke halaman profile
+          context.go('/profile'); // pastikan route '/profile' sudah ada di GoRouter
+        },
       ),
       title: Text(
         "Settings",
@@ -101,6 +104,7 @@ class SettingsPage extends StatelessWidget {
       centerTitle: true,
     );
   }
+
 
   Widget _buildSettingsOption({
     required BuildContext context,
