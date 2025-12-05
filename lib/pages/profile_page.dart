@@ -71,14 +71,13 @@ class _ProfilePageState extends State<ProfilePage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            EditProfilePage(
-              currentName: _name,
-              currentBirthday: _birthday,
-              currentMbti: _mbti,
-              currentCardColor: _cardColor,
-              currentHeaderColor: _headerColor,
-            ),
+        builder: (context) => EditProfilePage(
+          currentName: _name,
+          currentBirthday: _birthday,
+          currentMbti: _mbti,
+          currentCardColor: _cardColor,
+          currentHeaderColor: _headerColor,
+        ),
       ),
     );
 
@@ -183,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('happy'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_very_satisfied,
+            imagePath: "assets/mood_happy.png",
             backgroundColor: AppColors.screen1,
             count: happy,
           ),
@@ -191,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('flat'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_neutral,
+            imagePath: "assets/mood_flat.png",
             backgroundColor: AppColors.screen2,
             count: neutral,
           ),
@@ -199,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('sad'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_very_dissatisfied,
+            imagePath: "assets/mood_sad.png",
             backgroundColor: AppColors.button,
             count: sad,
           ),
@@ -207,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
         GestureDetector(
           onTap: () => _navigateToJournalMoodPage('angry'),
           child: _buildMoodRow(
-            iconData: Icons.sentiment_dissatisfied,
+            imagePath: "assets/mood_angry.png",
             backgroundColor: AppColors.merah,
             count: angry,
           ),
@@ -301,24 +300,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
+
                 Row(
                   children: [
-                    _buildEmojiCircle(
-                        Icons.sentiment_very_satisfied, AppColors.screen1),
+                    _buildEmojiCircle("assets/mood_happy.png", AppColors.screen1),
                     const SizedBox(width: 6),
-                    _buildEmojiCircle(
-                        Icons.sentiment_neutral, AppColors.screen2),
+                    _buildEmojiCircle("assets/mood_flat.png", AppColors.screen2),
                     const SizedBox(width: 6),
-                    _buildEmojiCircle(
-                        Icons.sentiment_very_dissatisfied, AppColors.button),
+                    _buildEmojiCircle("assets/mood_sad.png", AppColors.button),
                     const SizedBox(width: 6),
-                    _buildEmojiCircle(
-                        Icons.sentiment_dissatisfied, AppColors.merah),
+                    _buildEmojiCircle("assets/mood_angry.png", AppColors.merah),
                   ],
                 ),
               ],
             ),
           ),
+
+          // profile body
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -368,16 +366,22 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildEmojiCircle(IconData icon, Color color) {
+  Widget _buildEmojiCircle(String imagePath, Color color) {
     return Container(
       width: 20,
       height: 20,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.secondary, width: 1.5),
+        border: Border.all(color: AppColors.secondary, width: 2),
       ),
-      child: Icon(icon, color: AppColors.secondary, size: 14),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 
@@ -400,7 +404,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildMoodRow({
-    required IconData iconData,
+    required String imagePath,
     required Color backgroundColor,
     required int count,
   }) {
@@ -414,18 +418,22 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: backgroundColor,
-              border: Border.all(color: AppColors.secondary, width: 1.5),
+              border: Border.all(color: AppColors.secondary, width: 2),
             ),
-            child: Icon(iconData, size: 20, color: AppColors.secondary),
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Image.asset(imagePath, fit: BoxFit.contain),
+            ),
           ),
           const SizedBox(width: 12),
+
           Expanded(
             child: Container(
               height: 50,
               decoration: BoxDecoration(
                 color: backgroundColor,
                 borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: AppColors.secondary, width: 1.5),
+                border: Border.all(color: AppColors.secondary, width: 2),
               ),
               child: Center(
                 child: Text(
@@ -439,16 +447,18 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
+
           const SizedBox(width: 12),
+
           Container(
             width: 32,
             height: 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: backgroundColor,
-              border: Border.all(color: AppColors.secondary, width: 1.5),
+              border: Border.all(color: AppColors.secondary, width: 2),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.arrow_forward_ios,
               size: 14,
               color: AppColors.secondary,

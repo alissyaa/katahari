@@ -7,7 +7,6 @@ class TodoService {
 
   CollectionReference get _todos => _db.collection('todos');
 
-  // create
   Future<void> createTodo({
     required String title,
     required String description,
@@ -27,7 +26,7 @@ class TodoService {
       deadlineDate != null ? Timestamp.fromDate(deadlineDate) : null,
       'deadlineTime': deadlineTime,
       'status': status.toLowerCase(),
-      'createdAt': Timestamp.now(), // Ubah dari serverTimestamp ke Timestamp.now()
+      'createdAt': Timestamp.now(),
       'userId': user.uid,
     });
   }
