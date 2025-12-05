@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
-import 'edit_profile_page.dart'; // pastikan file ini ada
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,7 +17,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  // Stream untuk mendengarkan data profil secara real-time
   Stream<DocumentSnapshot<Map<String, dynamic>>> _getProfileStream() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -25,7 +24,6 @@ class _ProfilePageState extends State<ProfilePage> {
         .snapshots();
   }
 
-  // Stream untuk data jurnal (untuk hitungan mood)
   Stream<QuerySnapshot<Map<String, dynamic>>> _getJournalsStream() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -34,7 +32,6 @@ class _ProfilePageState extends State<ProfilePage> {
         .snapshots();
   }
 
-  // Navigasi ke halaman edit profile
   void _navigateToEditPage({
     required String name,
     required String birthday,
@@ -57,12 +54,10 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
 
-    // Jika result true, paksa rebuild ProfilePage
     if (result == true) {
       setState(() {});
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,16 +72,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final profileData =
               snapshot.data?.data()?['profile'] as Map<String, dynamic>? ?? {};
+
           final name = profileData['name'] as String? ??
               user.displayName ??
               user.email?.split('@')[0] ??
               'User';
-          final birthday = profileData['birthday'] as String? ?? "-";
-          final mbti = profileData['mbti'] as String? ?? "-";
+
+          final birthday = profileData['birthday'] ?? "-";
+          final mbti = profileData['mbti'] ?? "-";
+
           final cardColor = Color(
               profileData['cardColor'] as int? ?? AppColors.kream.value);
+
           final headerColor = Color(
               profileData['headerColor'] as int? ?? AppColors.primary.value);
+
           final imageUrl = profileData['imageUrl'] as String?;
 
           return _buildProfileContent(
@@ -112,6 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     String formattedDate =
     DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
+
     String capitalizedName =
     name.isNotEmpty ? '${name[0].toUpperCase()}${name.substring(1)}' : 'User';
 
@@ -124,7 +125,6 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,23 +142,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                // Icon settings
                 InkWell(
                   onTap: () {
                     GoRouter.of(context).go('/settings/settings_page');
                   },
                   borderRadius: BorderRadius.circular(20),
-                  child: const Icon(
-                    Icons.settings_outlined,
-                    size: 30,
-                    color: Colors.black,
-                  ),
+                  child: const Icon(Icons.settings_outlined,
+                      size: 30, color: Colors.black),
                 ),
               ],
             ),
+
             const SizedBox(height: 20),
 
-            // Profile Card
             GestureDetector(
               onTap: () {
                 _navigateToEditPage(
@@ -187,34 +183,37 @@ class _ProfilePageState extends State<ProfilePage> {
             StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: _getJournalsStream(),
               builder: (context, snapshot) {
-                int happyCount = 0, sadCount = 0, neutralCount = 0, angryCount = 0;
+                int happy = 0, sad = 0, flat = 0, angry = 0;
+
                 if (snapshot.hasData) {
                   for (var doc in snapshot.data!.docs) {
-                    final mood = doc.data()['mood'] as String?;
+                    final mood = doc['mood'];
                     switch (mood) {
                       case 'happy':
-                        happyCount++;
-                        break;
-                      case 'sad':
-                        sadCount++;
+                        happy++;
                         break;
                       case 'flat':
-                        neutralCount++;
+                        flat++;
+                        break;
+                      case 'sad':
+                        sad++;
                         break;
                       case 'angry':
-                        angryCount++;
+                        angry++;
                         break;
                     }
                   }
                 }
+
                 return _buildAllMoodRows(
-                  happy: happyCount,
-                  neutral: neutralCount,
-                  sad: sadCount,
-                  angry: angryCount,
+                  happy: happy,
+                  neutral: flat,
+                  sad: sad,
+                  angry: angry,
                 );
               },
             ),
+
             const SizedBox(height: 40),
           ],
         ),
@@ -242,27 +241,29 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               color: headerColor,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(14), topRight: Radius.circular(14)),
-              border:
-              Border(bottom: BorderSide(color: AppColors.secondary, width: 1.5)),
+              borderRadius:
+              const BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14)),
+              border: Border(
+                bottom: BorderSide(color: AppColors.secondary, width: 1.5),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: [
-                  Icon(Icons.auto_awesome, size: 20, color: AppColors.secondary),
-                  const SizedBox(width: 8),
-                  Text('katahari.',
+                Row(
+                  children: [
+                    Icon(Icons.auto_awesome,
+                        size: 20, color: AppColors.secondary),
+                    const SizedBox(width: 8),
+                    Text(
+                      'katahari.',
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppColors.secondary,
-                      ),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: AppColors.secondary),
                     ),
                   ],
                 ),
-
                 Row(
                   children: [
                     _buildEmojiCircle("assets/mood_happy.png", AppColors.screen1),
@@ -278,7 +279,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
 
-          // profile body
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -293,15 +293,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
-                      loadingBuilder: (context, child, progress) =>
+                      loadingBuilder:
+                          (context, child, progress) =>
                       progress == null
                           ? child
                           : const Center(
-                          child: CircularProgressIndicator()),
+                          child:
+                          CircularProgressIndicator()),
                       errorBuilder: (context, error, stack) =>
-                          Icon(Icons.person, size: 32, color: AppColors.secondary),
+                          Icon(Icons.person,
+                              size: 32, color: AppColors.secondary),
                     )
-                        : Icon(Icons.person, size: 32, color: AppColors.secondary),
+                        : Icon(Icons.person,
+                        size: 32, color: AppColors.secondary),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -331,6 +335,25 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget _buildMoodTrackerTitle(String name) {
+    String possessive =
+    name.toLowerCase().endsWith('s') ? "$name' Mood Tracker" : "$name's Mood Tracker";
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFD6E7FF),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black, width: 1.5),
+      ),
+      child: Text(
+        possessive,
+        style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600, color: const Color(0xFF0C1212)),
+      ),
+    );
+  }
+
   Widget _buildAllMoodRows({
     required int happy,
     required int neutral,
@@ -339,66 +362,38 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => _navigateToJournalMoodPage('happy'),
-          child: _buildMoodRow(
-            mood: 'happy',
-            iconData: Icons.sentiment_very_satisfied,
-            backgroundColor: AppColors.screen1,
-            count: happy,
-          ),
+        _buildMoodRow(
+          imagePath: "assets/mood_happy.png",
+          mood: 'happy',
+          backgroundColor: AppColors.screen1,
+          count: happy,
         ),
-        GestureDetector(
-          onTap: () => _navigateToJournalMoodPage('flat'),
-          child: _buildMoodRow(
-            mood: 'flat',
-            iconData: Icons.sentiment_neutral,
-            backgroundColor: AppColors.screen2,
-            count: neutral,
-          ),
+        _buildMoodRow(
+          imagePath: "assets/mood_flat.png",
+          mood: 'flat',
+          backgroundColor: AppColors.screen2,
+          count: neutral,
         ),
-        GestureDetector(
-          onTap: () => _navigateToJournalMoodPage('sad'),
-          child: _buildMoodRow(
-            mood: 'sad',
-            iconData: Icons.sentiment_very_dissatisfied,
-            backgroundColor: AppColors.button,
-            count: sad,
-          ),
+        _buildMoodRow(
+          imagePath: "assets/mood_sad.png",
+          mood: 'sad',
+          backgroundColor: AppColors.button,
+          count: sad,
         ),
-        GestureDetector(
-          onTap: () => _navigateToJournalMoodPage('angry'),
-          child: _buildMoodRow(
-            mood: 'angry',
-            iconData: Icons.sentiment_dissatisfied,
-            backgroundColor: AppColors.merah,
-            count: angry,
-          ),
+        _buildMoodRow(
+          imagePath: "assets/mood_angry.png",
+          mood: 'angry',
+          backgroundColor: AppColors.merah,
+          count: angry,
         ),
       ],
     );
   }
 
-  Widget _buildMoodTrackerTitle(String name) {
-    String possessiveName =
-    name.toLowerCase().endsWith('s') ? "$name' Mood Tracker" : "$name's Mood Tracker";
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFD6E7FF),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 1.5),
-      ),
-      child: Text(possessiveName,
-          style: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600, color: const Color(0xFF0C1212))),
-    );
-  }
-
   Widget _buildMoodRow({
-    required String imagePath,
+    String? imagePath,
+    IconData? iconData,
     required String mood,
-    required IconData iconData,
     required Color backgroundColor,
     required int count,
   }) {
@@ -416,9 +411,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   shape: BoxShape.circle,
                   color: backgroundColor,
                   border: Border.all(color: Colors.black, width: 1.5)),
-              child: Icon(iconData, size: 20, color: Colors.black),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: imagePath != null
+                    ? Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Image.asset(imagePath, fit: BoxFit.contain),
+                )
+                    : Icon(iconData, size: 20, color: Colors.black),
+              ),
             ),
+
             const SizedBox(width: 12),
+
             Expanded(
               child: Container(
                 height: 50,
@@ -427,14 +432,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(25),
                     border: Border.all(color: Colors.black, width: 1.5)),
                 child: Center(
-                    child: Text(count.toString(),
-                        style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black))),
+                  child: Text(
+                    count.toString(),
+                    style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black),
+                  ),
+                ),
               ),
             ),
+
             const SizedBox(width: 12),
+
             Container(
               width: 32,
               height: 32,
@@ -451,15 +461,24 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildEmojiCircle(IconData icon, Color color) {
+  Widget _buildEmojiCircle(String imagePath, Color color) {
     return Container(
       width: 20,
       height: 20,
       decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(width: 1.5, color: AppColors.secondary)),
-      child: Icon(icon, color: AppColors.secondary, size: 14),
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(width: 1.5, color: AppColors.secondary),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
+          errorBuilder: (context, err, stack) =>
+              Icon(Icons.sentiment_neutral, size: 12, color: AppColors.secondary),
+        ),
+      ),
     );
   }
 
