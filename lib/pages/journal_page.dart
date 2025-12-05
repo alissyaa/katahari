@@ -41,7 +41,7 @@ class _JournalPageState extends State<JournalPage> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
+        padding: const EdgeInsets.only(bottom: 100),
         child: Container(
           width: 70,
           height: 70,
