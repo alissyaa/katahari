@@ -255,20 +255,30 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(width: 8),
                   Text('katahari.',
                       style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: AppColors.secondary)),
-                ]),
-                Row(children: [
-                  _buildEmojiCircle(Icons.sentiment_very_satisfied, AppColors.screen1),
-                  const SizedBox(width: 6),
-                  _buildEmojiCircle(Icons.sentiment_neutral, AppColors.screen2),
-                  const SizedBox(width: 6),
-                  _buildEmojiCircle(Icons.sentiment_very_dissatisfied, AppColors.merah),
-                ]),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  children: [
+                    _buildEmojiCircle("assets/mood_happy.png", AppColors.screen1),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle("assets/mood_flat.png", AppColors.screen2),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle("assets/mood_sad.png", AppColors.button),
+                    const SizedBox(width: 6),
+                    _buildEmojiCircle("assets/mood_angry.png", AppColors.merah),
+                  ],
+                ),
               ],
             ),
           ),
+
+          // profile body
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -386,6 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildMoodRow({
+    required String imagePath,
     required String mood,
     required IconData iconData,
     required Color backgroundColor,

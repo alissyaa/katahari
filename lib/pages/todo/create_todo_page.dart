@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/services/todo_services.dart';
-import '../../config/routes.dart';
+import 'package:katahari/components/todo/custom_date_time_picker.dart';
 import '../../constant/app_colors.dart';
 
 class CreateTodoPage extends StatefulWidget {
@@ -22,16 +21,15 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   String selectedLabel = '';
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-
   bool isCreating = false;
 
   final List<Map<String, dynamic>> labelOptions = [
-    {'label': 'Work', 'icon': Icons.work_outline, 'color': const Color(0xFF6BA6FF)},
-    {'label': 'Personal', 'icon': Icons.person_outline, 'color': const Color(0xFF9C6BFF)},
-    {'label': 'Shopping', 'icon': Icons.shopping_cart_outlined, 'color': const Color(0xFFFF6BA6)},
-    {'label': 'Study', 'icon': Icons.school_outlined, 'color': const Color(0xFFFF9F45)},
-    {'label': 'Health', 'icon': Icons.favorite_border, 'color': const Color(0xFF4CD964)},
-    {'label': 'Family', 'icon': Icons.home_outlined, 'color': const Color(0xFFFFC857)},
+    {'label': 'Work', 'icon': Icons.work_outline, 'color': AppColors.button},
+    {'label': 'Personal', 'icon': Icons.person_outline, 'color': Color(0xFFC3A3FF)},
+    {'label': 'Shopping', 'icon': Icons.shopping_cart_outlined, 'color': AppColors.merah},
+    {'label': 'Study', 'icon': Icons.school_outlined, 'color': AppColors.screen2},
+    {'label': 'Health', 'icon': Icons.favorite_border, 'color': AppColors.screen1},
+    {'label': 'Family', 'icon': Icons.home_outlined, 'color': AppColors.kream},
   ];
 
   @override
@@ -42,191 +40,167 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   }
 
   TextStyle get _labelTextStyle => GoogleFonts.poppins(
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: FontWeight.w500,
-    fontStyle: FontStyle.italic, // <- italic untuk Title, Label, dll
+    fontStyle: FontStyle.italic,
   );
 
   @override
   Widget build(BuildContext context) {
-    const Color mainBlue = Color(0xFF6BA6FF);
+    const Color mainBlue = AppColors.button;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[100],
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Task',
-          style: GoogleFonts.poppins(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dialogTheme: DialogThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
-        centerTitle: true,
+        colorScheme: const ColorScheme.light(
+          primary: AppColors.secondary,
+          onPrimary: AppColors.primary,
+          onSurface: AppColors.secondary,
+        ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Icon circle di tengah
-                Center(
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: selectedLabel.isNotEmpty
-                          ? _getLabelColor(selectedLabel).withOpacity(0.2)
-                          : const Color(0xFFB3D9FF),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      selectedLabel.isNotEmpty
-                          ? _getLabelIcon(selectedLabel)
-                          : Icons.task_alt_outlined,
-                      size: 60,
-                      color: selectedLabel.isNotEmpty
-                          ? _getLabelColor(selectedLabel)
-                          : mainBlue,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Title
-                Text('Title', style: _labelTextStyle),
-                const SizedBox(height: 8),
-                _roundedTextField(
-                  controller: _titleController,
-                  hint: 'Enter to-do',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Label
-                Text('Label', style: _labelTextStyle),
-                const SizedBox(height: 8),
-                _buildLabelDropdown(),
-                const SizedBox(height: 20),
-
-                // Description
-                Text('Description', style: _labelTextStyle),
-                const SizedBox(height: 8),
-                _roundedTextField(
-                  controller: _descriptionController,
-                  hint: 'Enter a description',
-                  maxLines: 3,
-                  borderRadius: 20,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a description';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Deadline
-                Text('Deadline', style: _labelTextStyle),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _pickDate,
-                        child: _roundedContainer(
-                          child: Text(
-                            selectedDate != null
-                                ? DateFormat('dd/MM/yyyy').format(selectedDate!)
-                                : 'Date',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: selectedDate != null ? Colors.black : Colors.grey[400],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _pickTime,
-                        child: _roundedContainer(
-                          child: Text(
-                            selectedTime != null
-                                ? selectedTime!.format(context)
-                                : 'Time',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: selectedTime != null ? Colors.black : Colors.grey[400],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 40),
-
-                // Button Create
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: isCreating ? null : _createTodo,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.button,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide( // stroke button
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        appBar: AppBar(
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.secondary),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            'Task',
+            style: GoogleFonts.poppins(
+              color: AppColors.secondary,
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: selectedLabel.isNotEmpty
+                            ? _getLabelColor(selectedLabel).withValues(alpha: 0.25)
+                            : AppColors.button,
+                        shape: BoxShape.circle,
+                        border: Border.all(
                           color: AppColors.secondary,
                           width: 2,
                         ),
                       ),
-                      elevation: 0,
-                    ),
-                    child: isCreating
-                        ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
-                      ),
-                    )
-                        : Text(
-                      'Create',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.secondary,
+                      child: Icon(
+                        selectedLabel.isNotEmpty
+                            ? _getLabelIcon(selectedLabel)
+                            : Icons.task_alt_outlined,
+                        size: 60,
+                        color: selectedLabel.isNotEmpty
+                            ? _getLabelColor(selectedLabel)
+                            : mainBlue,
                       ),
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 30),
+
+                  Text('Title', style: _labelTextStyle),
+                  const SizedBox(height: 8),
+                  _roundedTextField(
+                    controller: _titleController,
+                    hint: 'Enter to-do',
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Please enter a title'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+
+                  Text('Label', style: _labelTextStyle),
+                  const SizedBox(height: 8),
+                  _buildLabelDropdown(),
+                  const SizedBox(height: 20),
+
+                  Text('Description', style: _labelTextStyle),
+                  const SizedBox(height: 8),
+                  _roundedTextField(
+                    controller: _descriptionController,
+                    hint: 'Enter a description',
+                    maxLines: 3,
+                    borderRadius: 20,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Please enter a description'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+
+                  Text('Deadline', style: _labelTextStyle),
+                  const SizedBox(height: 8),
+
+                  CustomDateTimePicker(
+                    selectedDate: selectedDate,
+                    selectedTime: selectedTime,
+                    onPickDate: _pickDate,
+                    onPickTime: _pickTime,
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: isCreating ? null : _createTodo,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.button,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: const BorderSide(
+                            color: AppColors.secondary,
+                            width: 2,
+                          ),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: isCreating
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
+                      )
+                          : Text(
+                        'Create',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.secondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
-  // ========= Widgets kecil =========
 
   Widget _roundedTextField({
     required TextEditingController controller,
@@ -238,26 +212,26 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
-      style: GoogleFonts.poppins(fontSize: 14),
+      style: GoogleFonts.poppins(fontSize: 14, color: AppColors.secondary),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.poppins(
-          color: Colors.grey[400],
+          color: AppColors.abumuda,
           fontSize: 14,
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.primary,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1), // stroke
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
-          borderSide: const BorderSide(color: Color(0xFF6BA6FF), width: 2),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       ),
@@ -265,44 +239,35 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
     );
   }
 
-  Widget _roundedContainer({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.grey[400]!, width: 1), // stroke
-      ),
-      child: child,
-    );
-  }
-
   Widget _buildLabelDropdown() {
     return DropdownButtonFormField<String>(
-      value: selectedLabel.isEmpty ? null : selectedLabel,
-      style: GoogleFonts.poppins(fontSize: 14),
+      initialValue: selectedLabel.isEmpty ? null : selectedLabel,
+      style: GoogleFonts.poppins(fontSize: 14, color: AppColors.secondary),
+      dropdownColor: AppColors.primary,
       decoration: InputDecoration(
         hintText: 'Select a label',
         hintStyle: GoogleFonts.poppins(
-          color: Colors.grey[400],
+          color: AppColors.abumuda,
           fontSize: 14,
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.primary,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1), // stroke
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(color: Colors.grey[400]!, width: 1),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: const BorderSide(color: Color(0xFF6BA6FF), width: 2),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       ),
+      icon: const Icon(Icons.keyboard_arrow_down_rounded,
+          color: AppColors.secondary),
       items: labelOptions.map((label) {
         return DropdownMenuItem<String>(
           value: label['label'],
@@ -310,29 +275,18 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
             children: [
               Icon(label['icon'], color: label['color'], size: 20),
               const SizedBox(width: 10),
-              Text(
-                label['label'],
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
+              Text(label['label']),
             ],
           ),
         );
       }).toList(),
       onChanged: (value) {
-        setState(() {
-          selectedLabel = value ?? '';
-        });
+        setState(() => selectedLabel = value ?? '');
       },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please select a label';
-        }
-        return null;
-      },
+      validator: (value) =>
+      value == null || value.isEmpty ? 'Please select a label' : null,
     );
   }
-
-  // ========= Date & Time =========
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -341,10 +295,9 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
+
     if (picked != null) {
-      setState(() {
-        selectedDate = picked;
-      });
+      setState(() => selectedDate = picked);
     }
   }
 
@@ -353,19 +306,14 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
+
     if (picked != null) {
-      setState(() {
-        selectedTime = picked;
-      });
+      setState(() => selectedTime = picked);
     }
   }
 
-  // ========= Create =========
-
   Future<void> _createTodo() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (selectedDate == null || selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -374,9 +322,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
       return;
     }
 
-    setState(() {
-      isCreating = true;
-    });
+    setState(() => isCreating = true);
 
     try {
       final deadlineDateTime = DateTime(
@@ -396,12 +342,12 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         status: 'ongoing',
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Task created successfully!')),
-        );
-        Navigator.pop(context);
-      }
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Task created successfully!')),
+      );
+      Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -410,14 +356,10 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
       }
     } finally {
       if (mounted) {
-        setState(() {
-          isCreating = false;
-        });
+        setState(() => isCreating = false);
       }
     }
   }
-
-  // ========= Icon & Color helper =========
 
   IconData _getLabelIcon(String label) {
     switch (label.toLowerCase()) {
@@ -439,21 +381,10 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
   }
 
   Color _getLabelColor(String label) {
-    switch (label.toLowerCase()) {
-      case 'work':
-        return const Color(0xFF6BA6FF);
-      case 'personal':
-        return const Color(0xFF9C6BFF);
-      case 'shopping':
-        return const Color(0xFFFF6BA6);
-      case 'study':
-        return const Color(0xFFFF9F45);
-      case 'health':
-        return const Color(0xFF4CD964);
-      case 'family':
-        return const Color(0xFFFFC857);
-      default:
-        return Colors.grey;
-    }
+    final item = labelOptions.firstWhere(
+          (e) => e['label'] == label,
+      orElse: () => {},
+    );
+    return item.isNotEmpty ? item['color'] : AppColors.abumuda;
   }
 }
