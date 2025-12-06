@@ -213,7 +213,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     );
   }
 
-  /// TEXTFIELD BUILDER
   Widget _buildTextField(String hint, TextEditingController controller,
       {bool obscure = false}) {
     return Focus(

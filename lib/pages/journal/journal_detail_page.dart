@@ -102,7 +102,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
               },
             ),
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.merah),
               child: const Text('Hapus'),
               onPressed: () {
                 Navigator.of(dialogContext).pop();
@@ -147,9 +147,9 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
         final stickersData = List<Map<String, dynamic>>.from(data['stickers'] ?? []);
         final activeStickers = stickersData.map((d) => Sticker.fromJson(d)).toList();
         final mood = data['mood'] ?? 'happy';
-        final paperColor = Color(data['paperColor'] as int? ?? Colors.white.value);
+        final paperColor = Color(data['paperColor'] as int? ?? AppColors.primary.value);
         final fontSize = (data['fontSize'] as num?)?.toDouble() ?? 16.0;
-        final textColor = Color(data['textColor'] as int? ?? Colors.black87.value);
+        final textColor = Color(data['textColor'] as int? ?? AppColors.abu.value);
         final location = data['location'] as String?;
         final song = data['song'] as String?;
 
@@ -170,7 +170,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.black, size: 26),
+                icon: const Icon(Icons.delete_outline, color: AppColors.secondary, size: 26),
                 onPressed: () {
                   _showDeleteConfirmationDialog(context, imageUrls);
                 },
@@ -199,7 +199,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: AppColors.secondary.withOpacity(0.1),
                           blurRadius: 50,
                           offset: const Offset(0, 5),
                         )
@@ -339,7 +339,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
       loadingBuilder: (context, child, progress) =>
       progress == null ? child : const Center(child: CircularProgressIndicator()),
       errorBuilder: (context, error, stackTrace) =>
-      const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+      const Icon(Icons.broken_image, size: 50, color: AppColors.abumuda),
     );
   }
 

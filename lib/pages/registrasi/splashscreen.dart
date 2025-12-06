@@ -108,7 +108,6 @@ class _SplashScreenState extends State<SplashScreen>
               clipBehavior: Clip.none,
               alignment: Alignment.center,
               children: [
-                // Expanding soft white glow
                 Transform.translate(
                   offset: Offset(0, _dropAnim.value),
                   child: Container(
@@ -136,7 +135,6 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
 
-                // Logo + Text
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -19,11 +19,11 @@ class Sticker {
   Sticker({required this.assetPath, required this.position, this.size = 100.0});
 
   Map<String, dynamic> toJson() => {
-        'assetPath': assetPath,
-        'dx': position.dx,
-        'dy': position.dy,
-        'size': size,
-      };
+    'assetPath': assetPath,
+    'dx': position.dx,
+    'dy': position.dy,
+    'size': size,
+  };
 
   factory Sticker.fromJson(Map<String, dynamic> json) => Sticker(
       assetPath: json['assetPath'],
@@ -271,7 +271,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
         // Atur warna ikon AppBar agar kontras
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => context.pop()),
         centerTitle: true,
-        title: Text('Journal', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
+        title: Text('Journal', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
         actions: [IconButton(icon: const Icon(Icons.check, color: Colors.black, size: 28), onPressed: _saveJournalEntry)],
       ),
       body: _isLoading
@@ -286,75 +286,75 @@ class _AddJournalPageState extends State<AddJournalPage> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   child: Container(
                     child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(formattedDate, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
-                            GestureDetector(
-                              onTap: _showMoodPicker,
-                              child: Image.asset(_moodAssets[_selectedMood] ?? 'assets/mood_happy.png', width: 36, height: 36),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _buildImageGrid(),
-                        if (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) const SizedBox(height: 16),
-                        TextField(
-                          controller: _titleController,
-                          style: GoogleFonts.poppins(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: _textColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(formattedDate, style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600])),
+                              GestureDetector(
+                                onTap: _showMoodPicker,
+                                child: Image.asset(_moodAssets[_selectedMood] ?? 'assets/mood_happy.png', width: 36, height: 36),
+                              ),
+                            ],
                           ),
-                          maxLines: null,
-                          decoration: InputDecoration.collapsed(
-                            hintText: 'Title',
-                            hintStyle: GoogleFonts.poppins(
+                          const SizedBox(height: 16),
+                          _buildImageGrid(),
+                          if (_selectedImages.isNotEmpty || _existingImageUrls.isNotEmpty) const SizedBox(height: 16),
+                          TextField(
+                            controller: _titleController,
+                            style: GoogleFonts.poppins(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey,
+                              color: _textColor,
+                            ),
+                            maxLines: null,
+                            decoration: InputDecoration.collapsed(
+                              hintText: 'Title',
+                              hintStyle: GoogleFonts.poppins(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _descriptionController,
-                          style: GoogleFonts.poppins(
-                            fontSize: _fontSize,
-                            height: 1.6,
-                            color: _textColor,
-                          ),
-                          maxLines: null,
-                          decoration: InputDecoration.collapsed(
-                            hintText: 'Start writing your story...',
-                            hintStyle: GoogleFonts.poppins(
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _descriptionController,
+                            style: GoogleFonts.poppins(
                               fontSize: _fontSize,
                               height: 1.6,
-                              color: Colors.grey,
+                              color: _textColor,
+                            ),
+                            maxLines: null,
+                            decoration: InputDecoration.collapsed(
+                              hintText: 'Start writing your story...',
+                              hintStyle: GoogleFonts.poppins(
+                                fontSize: _fontSize,
+                                height: 1.6,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          children: [
-                            // --- MEMBUAT TAG BISA DITEKAN ---
-                            GestureDetector(
-                              onTap: () => _showTagInputDialog('location'),
-                              child: _buildTag(Icons.location_on_outlined, _location),
-                            ),
-                            const SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () => _showTagInputDialog('song'),
-                              child: _buildTag(Icons.music_note_outlined, _song),
-                            ),
-                          ],
-                        ),
-                      ],
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              // --- MEMBUAT TAG BISA DITEKAN ---
+                              GestureDetector(
+                                onTap: () => _showTagInputDialog('location'),
+                                child: _buildTag(Icons.location_on_outlined, _location),
+                              ),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () => _showTagInputDialog('song'),
+                                child: _buildTag(Icons.music_note_outlined, _song),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   ),
                 ),
               ],

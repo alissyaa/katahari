@@ -29,12 +29,12 @@ class _EditTodoPageState extends State<EditTodoPage> {
   bool isSaving = false;
 
   final List<Map<String, dynamic>> labelOptions = [
-    {'label': 'Work', 'icon': Icons.work_outline, 'color': AppColors.button},
-    {'label': 'Personal', 'icon': Icons.person_outline, 'color': Color(0xFF9C6BFF)},
+    {'label': 'Work', 'icon': Icons.work_outline, 'color': AppColors.secondary},
+    {'label': 'Personal', 'icon': Icons.person_outline, 'color': AppColors.purple},
     {'label': 'Shopping', 'icon': Icons.shopping_cart_outlined, 'color': AppColors.merah},
     {'label': 'Study', 'icon': Icons.school_outlined, 'color': AppColors.screen2},
     {'label': 'Health', 'icon': Icons.favorite_border, 'color': AppColors.screen1},
-    {'label': 'Family', 'icon': Icons.home_outlined, 'color': AppColors.kream},
+    {'label': 'Family', 'icon': Icons.home_outlined, 'color': AppColors.button},
   ];
 
   @override
@@ -97,7 +97,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
           style: GoogleFonts.poppins(
             color: AppColors.secondary,
             fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
@@ -211,7 +211,6 @@ class _EditTodoPageState extends State<EditTodoPage> {
 
                 const SizedBox(height: 40),
 
-                /// SAVE BUTTON
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -251,8 +250,6 @@ class _EditTodoPageState extends State<EditTodoPage> {
       ),
     );
   }
-
-  // ------------------------- widgets -----------------------------
 
   Widget _roundedTextField({
     required TextEditingController controller,
@@ -440,7 +437,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
       case 'work':
         return AppColors.button;
       case 'personal':
-        return Color(0xFF9C6BFF);
+        return AppColors.purple;
       case 'shopping':
         return AppColors.merah;
       case 'study':
