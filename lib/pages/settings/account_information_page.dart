@@ -119,15 +119,15 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.button, width: 2.0),
+              borderSide: BorderSide(color: AppColors.button, width: 2),
             ),
           ),
         ),
@@ -150,7 +150,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
           backgroundColor: AppColors.button,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
-            side: BorderSide(color: AppColors.secondary, width: 1.5),
+            side: BorderSide(color: AppColors.secondary, width: 2),
           ),
           elevation: 0,
         ),

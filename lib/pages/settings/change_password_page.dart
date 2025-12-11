@@ -237,11 +237,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.secondary, width: 1.5),
+              borderSide: BorderSide(color: AppColors.secondary, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
@@ -249,7 +249,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: AppColors.merah, width: 1.5),
+              borderSide: BorderSide(color: AppColors.merah, width: 2),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
@@ -272,7 +272,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           backgroundColor: AppColors.button,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
-            side: BorderSide(color: AppColors.secondary, width: 1.5),
+            side: BorderSide(color: AppColors.secondary, width: 2),
           ),
           elevation: 0,
         ),

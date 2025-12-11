@@ -266,7 +266,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ================= TODO CARD =================
   Widget _buildTodoCard(Todo todo) {
     return GestureDetector(
       onTap: () => _showTodoDetailDialog(todo),

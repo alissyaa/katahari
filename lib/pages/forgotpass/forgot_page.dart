@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:katahari/constant/app_colors.dart';
+import 'package:katahari/config/routes.dart';
+import 'package:go_router/go_router.dart';
+
 
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});
@@ -34,30 +38,36 @@ class _ForgotPageState extends State<ForgotPage> {
         SnackBar(content: Text('Error: $e')),
       );
     }
-
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primary,
+
+      // APP BAR YANG SUDAH CENTER 100% dan BACK BUTTON BERFUNGSI
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leadingWidth: 70,
-        leading: const BackButton(color: Colors.black),
-        titleSpacing: 0,
+        automaticallyImplyLeading: false, // kita handle manual
         centerTitle: true,
         title: Text(
           "Forgot Password",
           style: GoogleFonts.poppins(
-            fontSize: 25,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: AppColors.secondary,
           ),
         ),
+
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.secondary),
+          onPressed: () {
+            context.go(AppRoutes.login);
+          },
+        ),
       ),
+
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -80,7 +90,7 @@ class _ForgotPageState extends State<ForgotPage> {
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColors.secondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -92,7 +102,7 @@ class _ForgotPageState extends State<ForgotPage> {
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
                       fontSize: 15,
-                      color: Colors.grey[600],
+                      color: AppColors.abumuda,
                     ),
                   ),
 
@@ -104,23 +114,25 @@ class _ForgotPageState extends State<ForgotPage> {
                     textAlign: TextAlign.start,
                     decoration: InputDecoration(
                       hintText: "Your email",
-                      hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                      hintStyle: GoogleFonts.poppins(color: AppColors.abumuda),
                       filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      fillColor: AppColors.primary,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Colors.black, width: 1),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondary, width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: const BorderSide(color: Colors.black, width: 1),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondary, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide:
-                        const BorderSide(color: Colors.black, width: 1.2),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondary, width: 2),
                       ),
                     ),
                   ),
@@ -132,8 +144,9 @@ class _ForgotPageState extends State<ForgotPage> {
                     child: ElevatedButton(
                       onPressed: resetPassword,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFA9CCEF),
-                        side: const BorderSide(color: Colors.black, width: 1),
+                        backgroundColor: AppColors.button,
+                        side: const BorderSide(
+                            color: AppColors.secondary, width: 2),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -145,7 +158,7 @@ class _ForgotPageState extends State<ForgotPage> {
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black,
+                          color: AppColors.secondary,
                         ),
                       ),
                     ),
