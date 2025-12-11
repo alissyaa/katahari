@@ -252,7 +252,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       decoration: BoxDecoration(
         color: _selectedBodyColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.secondary, width: 1.5),
+        border: Border.all(color: AppColors.secondary, width: 2),
       ),
       child: Column(
         children: [
@@ -264,7 +264,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   topLeft: Radius.circular(14),
                   topRight: Radius.circular(14)),
               border: Border(
-                  bottom: BorderSide(color: AppColors.secondary, width: 1.5)),
+                  bottom: BorderSide(color: AppColors.secondary, width: 2)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -306,7 +306,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         border:
-                        Border.all(color: AppColors.secondary, width: 1.5),
+                        Border.all(color: AppColors.secondary, width: 2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: _buildProfileImage(),
@@ -401,7 +401,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.secondary, width: 1.5),
+                  border: Border.all(color: AppColors.secondary, width: 2),
                 ),
                 child: isSelected
                     ? Icon(Icons.check, color: AppColors.kream, size: 20)
@@ -443,12 +443,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
                 borderSide:
-                BorderSide(color: AppColors.secondary, width: 1.5),
+                BorderSide(color: AppColors.secondary, width: 2),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
                 borderSide:
-                BorderSide(color: AppColors.secondary, width: 1.5),
+                BorderSide(color: AppColors.secondary, width: 2),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -471,7 +471,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           backgroundColor: AppColors.button,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
-            side: BorderSide(color: AppColors.secondary, width: 1.5),
+            side: BorderSide(color: AppColors.secondary, width: 2),
           ),
           elevation: 0,
         ),
@@ -493,7 +493,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       decoration: BoxDecoration(
           color: color,
           shape: BoxShape.circle,
-          border: Border.all(width: 1.5, color: AppColors.secondary)),
+          border: Border.all(width: 2, color: AppColors.secondary)),
       child: Icon(icon, color: AppColors.secondary, size: 14),
     );
   }

@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:katahari/constant/app_colors.dart';
-import 'edit_profile_page.dart';
+import 'package:katahari/components/all/header_widget.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F0F0),
+      backgroundColor: AppColors.primary,
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: _getProfileStream(),
         builder: (context, snapshot) {
@@ -118,29 +119,22 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hello, $capitalizedName',
-                      style: GoogleFonts.poppins(
-                          fontSize: 34, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      formattedDate,
-                      style: GoogleFonts.poppins(
-                          fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
+                Expanded(
+                  child: HeaderWidget(
+                    userName: name,
+                    date: formattedDate,
+                  ),
                 ),
                 InkWell(
                   onTap: () {
                     GoRouter.of(context).go('/settings/settings_page');
                   },
                   borderRadius: BorderRadius.circular(20),
-                  child: const Icon(Icons.settings_outlined,
-                      size: 30, color: Colors.black),
+                  child: const Icon(
+                    Icons.settings_outlined,
+                    size: 30,
+                    color: AppColors.secondary,
+                  ),
                 ),
               ],
             ),
@@ -225,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.secondary, width: 1.5),
+        border: Border.all(color: AppColors.secondary, width: 2),
       ),
       child: Column(
         children: [
@@ -236,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
               borderRadius:
               const BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14)),
               border: Border(
-                bottom: BorderSide(color: AppColors.secondary, width: 1.5),
+                bottom: BorderSide(color: AppColors.secondary, width: 2),
               ),
             ),
             child: Row(
@@ -334,14 +328,14 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFD6E7FF),
+        color: AppColors.button,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black, width: 1.5),
+        border: Border.all(color: AppColors.secondary, width: 2),
       ),
       child: Text(
         possessive,
         style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600, color: const Color(0xFF0C1212)),
+            fontWeight: FontWeight.w600, color: AppColors.secondary),
       ),
     );
   }
@@ -402,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: backgroundColor,
-                  border: Border.all(color: Colors.black, width: 1.5)),
+                  border: Border.all(color: AppColors.secondary, width: 2)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: imagePath != null
@@ -410,7 +404,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.all(4.0),
                   child: Image.asset(imagePath, fit: BoxFit.contain),
                 )
-                    : Icon(iconData, size: 20, color: Colors.black),
+                    : Icon(iconData, size: 20, color: AppColors.secondary),
               ),
             ),
 
@@ -422,14 +416,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: BoxDecoration(
                     color: backgroundColor,
                     borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: Colors.black, width: 1.5)),
+                    border: Border.all(color: AppColors.secondary, width: 2)),
                 child: Center(
                   child: Text(
                     count.toString(),
                     style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black),
+                        color: AppColors.secondary),
                   ),
                 ),
               ),
@@ -443,9 +437,9 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: backgroundColor,
-                  border: Border.all(color: Colors.black, width: 1.5)),
+                  border: Border.all(color: AppColors.secondary, width: 2)),
               child: const Icon(Icons.arrow_forward_ios,
-                  size: 14, color: Colors.black),
+                  size: 14, color: AppColors.secondary),
             ),
           ],
         ),
@@ -460,7 +454,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(width: 1.5, color: AppColors.secondary),
+        border: Border.all(width: 2, color: AppColors.secondary),
       ),
       child: Padding(
         padding: const EdgeInsets.all(3.0),

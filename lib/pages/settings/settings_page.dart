@@ -123,7 +123,7 @@ class SettingsPage extends StatelessWidget {
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: AppColors.secondary, width: 1.5),
+            border: Border.all(color: AppColors.secondary, width:2),
             color: Colors.transparent,
           ),
           child: Padding(
@@ -156,7 +156,7 @@ class SettingsPage extends StatelessWidget {
           backgroundColor: AppColors.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
-            side: BorderSide(color: AppColors.secondary, width: 1.5),
+            side: BorderSide(color: AppColors.secondary, width: 2),
           ),
           child: Container(
             padding: const EdgeInsets.all(24.0),
@@ -225,7 +225,7 @@ class SettingsPage extends StatelessWidget {
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
-            side: BorderSide(color: AppColors.secondary, width: 1.5),
+            side: BorderSide(color: AppColors.secondary, width: 2),
           ),
           elevation: 0,
         ),
