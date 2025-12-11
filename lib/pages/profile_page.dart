@@ -71,6 +71,8 @@ class _ProfilePageState extends State<ProfilePage> {
               user.email?.split('@')[0] ??
               'User';
 
+          final displayName = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+
           final birthday = profileData['birthday'] ?? "-";
           final mbti = profileData['mbti'] ?? "-";
 
@@ -89,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
             cardColor: cardColor,
             headerColor: headerColor,
             imageUrl: imageUrl,
+            displayName: displayName,
           );
         },
       ),
@@ -102,6 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
     required Color cardColor,
     required Color headerColor,
     required String? imageUrl,
+    required String displayName,
   }) {
     String formattedDate =
     DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
@@ -121,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Expanded(
                   child: HeaderWidget(
-                    userName: name,
+                    userName: displayName,
                     date: formattedDate,
                   ),
                 ),

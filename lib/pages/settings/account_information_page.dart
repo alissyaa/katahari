@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/constant/app_colors.dart';
@@ -16,8 +17,16 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController();
-    _emailController = TextEditingController();
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    _usernameController = TextEditingController(
+      text: user?.displayName ?? user?.email?.split('@')[0] ?? '',
+    );
+
+    _emailController = TextEditingController(
+      text: user?.email ?? '',
+    );
   }
 
   @override
@@ -32,40 +41,31 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: _buildAppBar(context),
+
+      // 🔥 BUTTON DIPINDAH KE SINI
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20),
+        child: _buildSaveButton(),
+      ),
+
       body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery
-                .of(context)
-                .size
-                .height -
-                AppBar().preferredSize.height -
-                MediaQuery
-                    .of(context)
-                    .padding
-                    .top,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(28.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildEditableField(
-                  label: "Username",
-                  controller: _usernameController,
-                  hint: "Enter username",
-                ),
-                const SizedBox(height: 16),
-                _buildEditableField(
-                  label: "Email",
-                  controller: _emailController,
-                  hint: "Enter email",
-                ),
-                const Spacer(),
-                _buildSaveButton(),
-                const SizedBox(height: 470),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(28.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildEditableField(
+                label: "Username",
+                controller: _usernameController,
+                hint: "Enter username",
+              ),
+              const SizedBox(height: 16),
+              _buildEditableField(
+                label: "Email",
+                controller: _emailController,
+                hint: "Enter email",
+              ),
+            ],
           ),
         ),
       ),
@@ -140,11 +140,19 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
       width: double.infinity,
       height: 55,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
+          final user = FirebaseAuth.instance.currentUser;
+
+          if (user != null) {
+            await user.updateDisplayName(_usernameController.text.trim());
+            await user.reload(); // Refresh user
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Information updated successfully!')),
+            const SnackBar(content: Text('Information updated successfully!')),
           );
-          Navigator.pop(context);
+
+          Navigator.pop(context, true); // kasih sinyal ke previous page
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.button,
