@@ -49,24 +49,23 @@ class _AddJournalPageState extends State<AddJournalPage> {
   final List<Sticker> _activeStickers = [];
   bool _isLoading = true;
   double _fontSize = 16.0;
-  Color _textColor = Colors.black87;
+  Color _textColor = AppColors.secondary;
   String _selectedMood = 'happy';
-  Color _paperColor = Colors.white; // Hanya state warna kertas yang tersisa
+  Color _paperColor = AppColors.primary;
   String _location = 'Location Here';
   String _song = 'Song Here';
 
 
   final List<Color> _paperColors = [
-    Colors.white,
-    const Color(0xFFFBC4C4),
-    const Color(0xFFD6F8C5),
-    const Color(0xFFFFF4BD),
+    AppColors.primary,
+    AppColors.merah,
+    AppColors.screen1,
+    AppColors.screen2,
     const Color(0xFFD1E3FF),
   ];
-  // --- SEMUA KONFIGURASI TIDAK BERUBAH ---
   final List<double> _fontSizes = [12, 14, 16, 18, 20, 24, 28];
   final List<Color> _textColors = [
-    Colors.black87,
+    AppColors.secondary,
     const Color(0xFFD32F2F),
     const Color(0xFF303F9F),
     const Color(0xFF388E3C),
@@ -269,10 +268,10 @@ class _AddJournalPageState extends State<AddJournalPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         // Atur warna ikon AppBar agar kontras
-        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => context.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.secondary), onPressed: () => context.pop()),
         centerTitle: true,
-        title: Text('Journal', style: GoogleFonts.poppins(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
-        actions: [IconButton(icon: const Icon(Icons.check, color: Colors.black, size: 28), onPressed: _saveJournalEntry)],
+        title: Text('Journal', style: GoogleFonts.poppins(color: AppColors.secondary, fontWeight: FontWeight.bold, fontSize: 20)),
+        actions: [IconButton(icon: const Icon(Icons.check, color: AppColors.secondary, size: 28), onPressed: _saveJournalEntry)],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -416,7 +415,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
   void _showPaperStylePicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primary,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return Padding(
@@ -431,7 +430,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
                 spacing: 16,
                 children: _paperColors.map((color) {
                   bool isSelected = _paperColor.value == color.value;
-                  Color checkColor = color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+                  Color checkColor = color.computeLuminance() > 0.5 ? AppColors.secondary : AppColors.primary;
                   return GestureDetector(
                     onTap: () {
                       setState(() => _paperColor = color);
@@ -443,7 +442,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
                       decoration: BoxDecoration(
                         color: color,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade400, width: 1.5),
+                        border: Border.all(color: Colors.grey.shade400, width: 2),
                       ),
                       child: isSelected ? Icon(Icons.check, color: checkColor) : null,
                     ),
@@ -462,15 +461,15 @@ class _AddJournalPageState extends State<AddJournalPage> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(color: const Color(0xFF1F1F1F), borderRadius: BorderRadius.circular(50), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))]),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.grey[800], shape: BoxShape.circle), child: Text('T', style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.grey[800], shape: BoxShape.circle), child: Text('T', style: GoogleFonts.poppins(color: AppColors.primary, fontSize: 18, fontWeight: FontWeight.bold))),
         IconButton(icon: Icon(Icons.circle, color: _textColor, size: 28), onPressed: _showColorPicker),
         TextButton(
           onPressed: _showFontSizePicker,
-          child: Row(children: [Text('${_fontSize.toInt()}', style: GoogleFonts.poppins(color: Colors.white, fontSize: 16)), const Icon(Icons.arrow_drop_down, color: Colors.white)]),
+          child: Row(children: [Text('${_fontSize.toInt()}', style: GoogleFonts.poppins(color: AppColors.primary, fontSize: 16)), const Icon(Icons.arrow_drop_down, color: AppColors.primary)]),
         ),
-        IconButton(icon: const Icon(Icons.photo_library_outlined, color: Colors.white, size: 26), onPressed: _pickImages),
-        IconButton(icon: const Icon(Icons.mood_outlined, color: Colors.white, size: 26), onPressed: _showStickerPicker),
-        IconButton(icon: const Icon(Icons.layers_outlined, color: Colors.white, size: 26), onPressed: _showPaperStylePicker),
+        IconButton(icon: const Icon(Icons.photo_library_outlined, color: AppColors.primary, size: 26), onPressed: _pickImages),
+        IconButton(icon: const Icon(Icons.mood_outlined, color: AppColors.primary, size: 26), onPressed: _showStickerPicker),
+        IconButton(icon: const Icon(Icons.layers_outlined, color: AppColors.primary, size: 26), onPressed: _showPaperStylePicker),
       ]),
     );
   }
@@ -531,7 +530,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
             child: Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(color: Colors.black.withOpacity(0.7), shape: BoxShape.circle),
-              child: const Icon(Icons.close, color: Colors.white, size: 18),
+              child: const Icon(Icons.close, color: AppColors.primary, size: 18),
             ),
           ),
         ),
@@ -590,7 +589,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
             alignment: WrapAlignment.center,
             spacing: 16.0,
             runSpacing: 16.0,
-            children: _textColors.map((color) => GestureDetector(onTap: () => setState(() { _textColor = color; Navigator.of(context).pop(); }), child: Container(width: 40, height: 40, decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2))))).toList(),
+            children: _textColors.map((color) => GestureDetector(onTap: () => setState(() { _textColor = color; Navigator.of(context).pop(); }), child: Container(width: 40, height: 40, decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: Border.all(color:AppColors.primary, width: 2))))).toList(),
           ),
         ),
       ),
@@ -600,7 +599,7 @@ class _AddJournalPageState extends State<AddJournalPage> {
   Widget _buildTag(IconData icon, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
       child: Row(children: [Icon(icon, size: 18, color: Colors.grey[700]), const SizedBox(width: 6), Text(label, style: GoogleFonts.poppins(color: Colors.grey[700], fontSize: 12, fontWeight: FontWeight.w500))]),
     );
   }

@@ -1,15 +1,15 @@
-import 'dart:io'; // Diperlukan untuk File
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Diperlukan untuk User ID
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart'; // Diperlukan untuk memilih gambar
+import 'package:image_picker/image_picker.dart';
 import 'package:katahari/constant/app_colors.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Diperlukan untuk Supabase
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 
-import '../config/routes.dart'; // Diperlukan untuk nama file
+import 'package:katahari/config/routes.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -17,7 +17,7 @@ class EditProfilePage extends StatefulWidget {
   final String currentMbti;
   final Color currentCardColor;
   final Color currentHeaderColor;
-  final String? currentImageUrl; // <-- Tambahkan ini
+  final String? currentImageUrl;
 
   const EditProfilePage({
     super.key,
@@ -26,7 +26,7 @@ class EditProfilePage extends StatefulWidget {
     required this.currentMbti,
     required this.currentCardColor,
     required this.currentHeaderColor,
-    this.currentImageUrl, // <-- Tambahkan ini
+    this.currentImageUrl,
   });
 
   @override
@@ -41,7 +41,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late Color _selectedBodyColor;
   late Color _selectedHeaderColor;
 
-  // --- STATE BARU UNTUK GAMBAR ---
   final ImagePicker _picker = ImagePicker();
   XFile? _selectedImageFile;
   String? _existingImageUrl;
@@ -71,7 +70,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         text: widget.currentMbti == "-" ? "" : widget.currentMbti);
     _selectedBodyColor = widget.currentCardColor;
     _selectedHeaderColor = widget.currentHeaderColor;
-    _existingImageUrl = widget.currentImageUrl; // <-- Inisialisasi URL gambar
+    _existingImageUrl = widget.currentImageUrl;
   }
 
   @override
@@ -82,7 +81,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  // --- FUNGSI BARU UNTUK MEMILIH GAMBAR ---
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -107,7 +105,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final file = File(_selectedImageFile!.path);
       final bytes = await file.readAsBytes();
       final fileExtension = path.extension(_selectedImageFile!.path).toLowerCase();
-      final filePath = '${user.uid}/profile$fileExtension'; // path di dalam bucket
+      final filePath = '${user.uid}/profile$fileExtension';
 
       final supabase = Supabase.instance.client;
 
