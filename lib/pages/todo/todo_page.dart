@@ -163,7 +163,10 @@ class _TodoPageState extends State<TodoPage> {
         key: _dropdownKey,
         onTap: toggleDropdown,
         child: Container(
-          width: 150,
+          constraints: const BoxConstraints(
+            minWidth: 120,
+            maxWidth: 170,
+          ),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           decoration: BoxDecoration(
             color: mainColor,
@@ -225,7 +228,7 @@ class _TodoPageState extends State<TodoPage> {
         return Positioned(
           left: offset.dx,
           top: offset.dy + renderBox.size.height + 6,
-          width: width,
+          width: width.clamp(120, 200),
           child: Material(
             color: Colors.transparent,
             child: Column(
@@ -237,7 +240,7 @@ class _TodoPageState extends State<TodoPage> {
                     closeDropdown();
                   },
                   child: Container(
-                    width: width,
+                    width: width.clamp(120, 200),
                     margin: const EdgeInsets.only(bottom: 6),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
