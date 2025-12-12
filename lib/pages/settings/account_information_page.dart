@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:katahari/constant/app_colors.dart';
 
@@ -152,7 +153,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
             const SnackBar(content: Text('Information updated successfully!')),
           );
 
-          Navigator.pop(context, true); // kasih sinyal ke previous page
+          context.go('/profile');
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.button,
