@@ -41,7 +41,6 @@ class _ProfilePageState extends State<ProfilePage> {
     required Color headerColor,
     required String? imageUrl,
   }) {
-    // MENGGUNAKAN GoRouter untuk navigasi yang konsisten
     context.push('/profile/edit', extra: {
       'name': name,
       'birthday': birthday,
