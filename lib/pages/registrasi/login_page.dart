@@ -65,11 +65,20 @@ class _LoginPageState extends State<LoginPage>
         password: passwordController.text.trim(),
       );
 
+      // Tampilkan snackbar dulu (AMAN)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login successful!")),
+      );
+
+      // Delay sedikit agar SnackBar sempat muncul
+      await Future.delayed(const Duration(milliseconds: 350));
+
+      // CEK kalau widget masih hidup sebelum navigate
+      if (!mounted) return;
+
+      // Sekarang pindah halaman (AMAN)
       context.go(AppRoutes.journal);
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Login successful!"),
-      ));
     } on FirebaseAuthException catch (e) {
       String errorMessage = "An error occurred. Please try again.";
 
@@ -85,6 +94,7 @@ class _LoginPageState extends State<LoginPage>
       ));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
