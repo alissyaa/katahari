@@ -46,45 +46,37 @@ class TodoService {
     await _todos.doc(id).delete();
   }
 
-  // ambil dari status
   Stream<List<Todo>> getTodosByStatus(String status) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const Stream.empty();
 
     return _todos
         .where('userId', isEqualTo: user.uid)
-        .where('status', isEqualTo: status.toLowerCase())
         .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) =>
-        Todo.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-        .toList());
-  }
+        .asyncMap((snapshot) async {
+      final now = DateTime.now();
+      final batch = _db.batch();
 
-  Future<void> markMissedTodos() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+      final todos = snapshot.docs.map((doc) {
+        final todo = Todo.fromMap(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
 
-    final now = DateTime.now();
-
-    final snap = await _todos
-        .where('userId', isEqualTo: user.uid)
-        .where('status', isEqualTo: 'ongoing')
-        .get();
-
-    final batch = _db.batch();
-
-    for (final doc in snap.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final deadline = data['deadlineDate'] as Timestamp?;
-
-      if (deadline != null) {
-        if (deadline.toDate().isBefore(now)) {
+        // 🔥 AUTO PINDAH KE MISSED
+        if (todo.status == 'ongoing' &&
+            todo.deadlineDate != null &&
+            todo.deadlineDate!.isBefore(now)) {
           batch.update(doc.reference, {'status': 'missed'});
         }
-      }
-    }
 
-    await batch.commit();
+        return todo;
+      }).toList();
+
+      await batch.commit();
+
+      // FILTER DI CLIENT (ANTI FLICKER)
+      return todos.where((t) => t.status == status).toList();
+    });
   }
 }

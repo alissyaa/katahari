@@ -9,6 +9,7 @@ import 'package:katahari/constant/app_colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:katahari/components/all/header_widget.dart';
 import '../../config/routes.dart';
+import 'dart:async';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -22,6 +23,7 @@ class _TodoPageState extends State<TodoPage> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   bool isDropdownOpen = false;
+  Timer? _timer;
 
   final GlobalKey _dropdownKey = GlobalKey();
   String selectedStatus = "ongoing";
@@ -41,14 +43,20 @@ class _TodoPageState extends State<TodoPage> {
   @override
   void initState() {
     super.initState();
-    _service.markMissedTodos();
+
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
   }
+
 
   @override
   void dispose() {
+    _timer?.cancel();
     _overlayEntry?.remove();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +108,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ================= TASK HEADER + ADD BUTTON =================
   Widget _buildTaskHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,7 +152,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ================= DROPDOWN STATUS =================
   Widget _buildStatusDropdown() {
     Color mainColor = statusOptions.firstWhere(
           (s) => s["value"] == selectedStatus,
@@ -327,14 +333,15 @@ class _TodoPageState extends State<TodoPage> {
                 ),
               ),
               const SizedBox(width: 10),
-              GestureDetector(
-                onTap: () async {
-                  if (todo.status == 'ongoing') {
-                    await _service.updateStatus(todo.id, 'completed');
-                  } else if (todo.status == 'completed') {
-                    await _service.updateStatus(todo.id, 'ongoing');
-                  }
-                },
+              if (todo.status != 'missed')
+                GestureDetector(
+                  onTap: () async {
+                    if (todo.status == 'ongoing') {
+                      await _service.updateStatus(todo.id, 'completed');
+                    } else if (todo.status == 'completed') {
+                      await _service.updateStatus(todo.id, 'ongoing');
+                    }
+                  },
                 child: Container(
                   width: 32,
                   height: 32,
@@ -360,7 +367,6 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  // ================= POPUP DETAIL TODO =================
   Future<void> _showTodoDetailDialog(Todo todo) async {
     await showDialog(
       context: context,
@@ -380,7 +386,6 @@ class _TodoPageState extends State<TodoPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // ================= ROW STATUS & DATE =================
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -425,7 +430,6 @@ class _TodoPageState extends State<TodoPage> {
 
                 const SizedBox(height: 22),
 
-// ================= TITLE + ICON =================
                 Column(
                   children: [
                     Center(
@@ -444,7 +448,6 @@ class _TodoPageState extends State<TodoPage> {
 
                 const SizedBox(height: 20),
 
-// ================= DESCRIPTION =================
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
@@ -469,40 +472,38 @@ class _TodoPageState extends State<TodoPage> {
 
                 const SizedBox(height: 22),
 
-                // ================= BUTTONS =================
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // EDIT BUTTON
-                    SizedBox(
-                      width: 120,
-                      height: 42,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.button,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22),
-                            side: const BorderSide(color: AppColors.secondary, width: 2),
+                    if (todo.status != 'missed')
+                      SizedBox(
+                        width: 120,
+                        height: 42,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.button,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(22),
+                              side: const BorderSide(color: AppColors.secondary, width: 2),
+                            ),
                           ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          context.push(AppRoutes.editTodo, extra: todo);
-                        },
-                        child: const Text(
-                          "Edit",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: AppColors.secondary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            context.push(AppRoutes.editTodo, extra: todo);
+                          },
+                          child: const Text("Edit",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: AppColors.secondary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                         ),
                       ),
-                    ),
+                      ),
 
-                    // DELETE BUTTON
                     SizedBox(
                       width: 120,
                       height: 42,
