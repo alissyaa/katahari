@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_preview/device_preview.dart'; // import Device Preview
 import 'firebase_options.dart';
 
-// Router dibuat SEKALI
 final _appRouter = createRouter();
 
 Future<void> main() async {
