@@ -38,9 +38,9 @@ Katahari is a mobile application that combines a **To-Do List** and an **Aesthet
 
 ## Screenshots
 
-| Splash Screen                                      | First Page                             v   | Sign In Screen                              |
+| Splash Screen                                      | First Page                                 | Sign In Screen                              |
 |----------------------------------------------------|--------------------------------------------|---------------------------------------------|
-| <img src="./assets/splashscreen.jpeg" width="250"> | <img src="./assets/home.jpeg" width="250"> | <img src="./assets/login.jpeg" width="250"> |
+| <img src="./assets/splashscreen.jpeg" width="250"> | <img src="./assets/firstpage.jpeg" width="250"> | <img src="./assets/login.jpeg" width="250"> |
 | Displays the app logo while loading.               | Main page to access core features.         | Allows users to log in securely.            |
 
 | Sign Up Screen                                |  Forgot Password                            | To-Do Screen                                 |
