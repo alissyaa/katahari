@@ -9,7 +9,6 @@ class Todo {
   final String deadlineTime;
   final String status;
   final DateTime createdAt;
-  final String userId;
 
   Todo({
     required this.id,
@@ -20,7 +19,6 @@ class Todo {
     required this.deadlineTime,
     required this.status,
     required this.createdAt,
-    required this.userId,
   });
 
   factory Todo.fromMap(Map<String, dynamic> map, String documentId) {
@@ -35,7 +33,6 @@ class Todo {
       deadlineTime: map['deadlineTime'] ?? '',
       status: map['status'] ?? '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      userId: map['userId'] ?? '',
     );
   }
 
@@ -44,13 +41,11 @@ class Todo {
       'title': title,
       'description': description,
       'label': label,
-      'deadlineDate': deadlineDate != null
-          ? Timestamp.fromDate(deadlineDate!)
-          : null,
+      'deadlineDate':
+      deadlineDate != null ? Timestamp.fromDate(deadlineDate!) : null,
       'deadlineTime': deadlineTime,
       'status': status,
       'createdAt': Timestamp.fromDate(createdAt),
-      'userId': userId,
     };
   }
 }
