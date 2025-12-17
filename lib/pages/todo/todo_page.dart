@@ -44,6 +44,7 @@ class _TodoPageState extends State<TodoPage> {
   void initState() {
     super.initState();
 
+    // setiap satu menit trigger setState untuk update status
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) setState(() {});
     });
@@ -55,7 +56,7 @@ class _TodoPageState extends State<TodoPage> {
     _timer?.cancel();
     _overlayEntry?.remove();
     super.dispose();
-  }
+  } // mencegah memory leak
 
 
   @override
