@@ -20,7 +20,7 @@ Future<void> main() async {
 
   runApp(
     DevicePreview(
-      enabled: true, // set false jika mau matikan
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );
