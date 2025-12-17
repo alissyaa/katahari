@@ -13,10 +13,9 @@ Katahari is a mobile application that combines a **To-Do List** and an **Aesthet
 | **Name**    | Chairun Nisaq                  |
 | **ID**      | 231401042                      |
 | **Class**   | C                              |
-| **Name**    | Chairun Nisaq                  |
+| **Name**    | Rima Maharani Lubis            |
 | **ID**      | 231401015                      |
 | **Class**   | C                              |
-
 
 ---
 
@@ -30,18 +29,29 @@ Katahari is a mobile application that combines a **To-Do List** and an **Aesthet
   Write daily journals with support for stickers, photos, and creative visual layouts.
 - **User ID Card**  
   Displays user identity in a digital card format.
+- **Setting**
+  Allows users to customize application preferences such as account settings, password, and logout.
+- **Mood Statistic**
+  Displays visual summaries of users’ mood data over time to help track emotional patterns and support self-reflection.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
-| 🏠 Home Screen | 🔍 Detail Screen | ❤️ Favorite Screen |
-|--------|-----------|-------------|
-| <img src="./assets/home.png" width="250" style="border-radius:8px;"> | <img src="./assets/detail.png" width="250"> | <img src="./assets/favorite.png" width="250"> |
+| Splash Screen                                      | First Page                             v   | Sign In Screen                              |
+|----------------------------------------------------|--------------------------------------------|---------------------------------------------|
+| <img src="./assets/splashscreen.jpeg" width="250"> | <img src="./assets/home.jpeg" width="250"> | <img src="./assets/login.jpeg" width="250"> |
+| Displays the app logo while loading.               | Main page to access core features.         | Allows users to log in securely.            |
 
-| 👤 Profile Screen | 🔑 Sign In Screen | 📝 Sign Up Screen |
-|------------|------------|-------------|
-| <img src="./assets/profile.png" width="250"> | <img src="./assets/signin.png" width="250"> | <img src="./assets/signup.png" width="250"> |
+| Sign Up Screen                                |  Forgot Password                            | To-Do Screen                                 |
+|-----------------------------------------------|---------------------------------------------|----------------------------------------------|
+| <img src="./assets/sign up.jpeg" width="250"> | <img src="./assets/forgot.jpeg" width="250">| <img src="./assets/todo.jpeg" width="250">   |
+| Enables new users to create an account.       | Helps users reset their password.           | Manages daily tasks efficiently.             |
+
+|  Journal Screen                              | Profile Screen                                | Settings Screen                               |
+|----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| <img src="./assets/jurnal.jpeg" width="250"> | <img src="./assets/profile.jpeg" width="250"> | <img src="./assets/setting.jpeg" width="250"> |
+| Records daily reflections and moods.         | Displays user account information.            | Customizes app preferences and settings.      |
 
 
 ---
@@ -104,10 +114,10 @@ lib/
 │   │   ├── create_todo_page.dart
 │   │   ├── edit_todo_page.dart
 │   │   └── todo_page.dart
-│
+│   │
 ├── services/                         # Application services
 │   └── todo_services.dart            # Handles business logic and data operations related to to-do items.
-│
+│   │
 ├── utils/                            # Utility class for formatting date and time values consistently across the application.
 │   └── date_formatter.dart
 ```
@@ -118,6 +128,7 @@ lib/
 - Firebase Authentication
 - Cloud Firestore
 - Flutter Framework
+- Supabase
 
 ---
 
@@ -155,5 +166,9 @@ lib/
 6. The application is now ready to use.
 
 ---
+
+##  SRS
+
+https://drive.google.com/file/d/1V-n2sdCAgzj2BFqLkryXsSxqUTKO2qWi/view?usp=sharing
 
 ## Thank You!
