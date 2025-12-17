@@ -118,10 +118,6 @@ GoRouter createRouter() {
         },
       ),
 
-
-
-
-      // Rute-rute ini akan memiliki Navbar
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return BottomNavigationShell(navigationShell: navigationShell);

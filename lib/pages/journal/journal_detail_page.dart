@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:katahari/constant/app_colors.dart';
 import 'add_journal_page.dart' show Sticker;
+import 'journal_image_viewer_page.dart';
 
 class JournalDetailPage extends StatefulWidget {
   final String journalId;
@@ -74,8 +75,8 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
           .delete();
 
       if (context.mounted) {
-        Navigator.of(context).pop();
-        context.pop();
+        Navigator.of(context, rootNavigator: true).pop();
+        context.go('/journal');
       }
     } catch (e) {
       if (context.mounted) {
@@ -87,33 +88,120 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
     }
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, List<String> imageUrls) {
-    showDialog(
+  void _showDeleteConfirmationDialog(
+      BuildContext context,
+      List<String> imageUrls,
+      ) {
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Hapus Jurnal'),
-          content: const Text('Anda yakin ingin menghapus jurnal ini secara permanen?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Batal'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(foregroundColor: AppColors.merah),
-              child: const Text('Hapus'),
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                _deleteJournal(context, imageUrls);
-              },
-            ),
-          ],
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              Icon(
+                Icons.delete_outline,
+                size: 48,
+                color: AppColors.merah,
+              ),
+
+              const SizedBox(height: 16),
+
+              Text(
+                'Delete Journal?',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondary,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                'This action cannot be undone.\nYour journal and images will be permanently deleted.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: AppColors.abu,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.grey.shade400),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.secondary,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _deleteJournal(context, imageUrls);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.merah,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Delete',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
   }
+
 
   static const Map<String, String> _moodAssets = {
     'happy': 'assets/mood_happy.png',
@@ -333,15 +421,33 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
   }
 
   Widget _buildGridItem(String url) {
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, progress) =>
-      progress == null ? child : const Center(child: CircularProgressIndicator()),
-      errorBuilder: (context, error, stackTrace) =>
-      const Icon(Icons.broken_image, size: 50, color: AppColors.abumuda),
+    final index = imageUrls.indexOf(url);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => JournalImageViewerPage(
+              images: imageUrls,
+              initialIndex: index,
+            ),
+          ),
+        );
+      },
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, progress) =>
+        progress == null
+            ? child
+            : const Center(child: CircularProgressIndicator()),
+        errorBuilder: (context, error, stackTrace) =>
+        const Icon(Icons.broken_image, size: 50, color: AppColors.abumuda),
+      ),
     );
   }
+
 
   Widget _buildTag(IconData icon, String label) {
     return Container(

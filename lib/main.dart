@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_preview/device_preview.dart';
 import 'firebase_options.dart';
 
-// Router dibuat SEKALI
 final _appRouter = createRouter();
 
 Future<void> main() async {
@@ -21,7 +20,7 @@ Future<void> main() async {
 
   runApp(
     DevicePreview(
-      enabled: false, // set false jika mau matikan
+      enabled: false,
       builder: (context) => const MyApp(),
     ),
   );

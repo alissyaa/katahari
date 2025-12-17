@@ -217,46 +217,118 @@ class _AddJournalPageState extends State<AddJournalPage> {
   }
 
   Future<void> _showTagInputDialog(String type) async {
-    final TextEditingController controller = TextEditingController(
+    final controller = TextEditingController(
       text: type == 'location'
           ? (_location == 'Location Here' ? '' : _location)
           : (_song == 'Song Here' ? '' : _song),
     );
 
-    final String? result = await showDialog<String>(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Enter $type'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, controller.text);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
 
-    if (result != null) {
-      setState(() {
-        if (type == 'location') {
-          _location = result.isEmpty ? 'Location Here' : result;
-        } else {
-          _song = result.isEmpty ? 'Song Here' : result;
-        }
-      });
-    }
+                Row(
+                  children: [
+                    Icon(
+                      type == 'location'
+                          ? Icons.location_on_outlined
+                          : Icons.music_note_outlined,
+                      color: AppColors.secondary,
+                      size: 26,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      type == 'location' ? 'Add Location' : 'Add Song',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: AppColors.secondary,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: type == 'location'
+                        ? 'e.g. Medan, Indonesia'
+                        : 'e.g. LANY – ILYSB',
+                    hintStyle: GoogleFonts.poppins(color: Colors.grey),
+                    border: InputBorder.none,
+                  ),
+                ),
+
+                const Divider(height: 24),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        if (type == 'location') {
+                          _location = controller.text.isEmpty
+                              ? 'Location Here'
+                              : controller.text;
+                        } else {
+                          _song = controller.text.isEmpty
+                              ? 'Song Here'
+                              : controller.text;
+                        }
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Save',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {

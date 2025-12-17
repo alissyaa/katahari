@@ -168,14 +168,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       if (!mounted) return;
 
-      // --- PERBAIKAN UTAMA DI SINI ---
-      // 1. Tutup dialog loading dulu
       Navigator.of(context).pop();
-      // 2. Tutup halaman edit, maka akan otomatis kembali ke halaman profil
       GoRouter.of(context).go(AppRoutes.profile);
 
     } catch (e) {
-      if (mounted) Navigator.of(context).pop(); // Tutup loading jika error
+      if (mounted) Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal menyimpan profil: $e")),
       );
